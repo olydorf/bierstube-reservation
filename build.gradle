@@ -1,0 +1,137 @@
+plugins {
+    id 'org.springframework.boot' version '2.6.7'
+    id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+
+    id 'com.github.node-gradle.node' version '3.3.0'
+
+    id 'com.diffplug.spotless' version '6.6.1'
+    id 'checkstyle'
+
+    id 'java'
+}
+
+group = 'eist.aammn'
+version = '1.0.0'
+sourceCompatibility = '17'
+compileJava.options.encoding = 'UTF-8'
+compileTestJava.options.encoding = 'UTF-8'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-test'
+    implementation 'org.springframework.boot:spring-boot-starter'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+}
+
+sourceSets {
+    main {
+        java {
+            srcDir 'src/main/java'
+        }
+        resources {
+            srcDir 'src/main/resources'
+        }
+    }
+    test {
+        java {
+            srcDir 'src/test/java'
+        }
+        resources {
+            'src/test/resources'
+        }
+    }
+}
+
+processResources {
+    duplicatesStrategy = DuplicatesStrategy.INCLUDE
+}
+
+test {
+    defaultCharacterEncoding = 'UTF-8'
+    useJUnitPlatform()
+}
+
+// Run the server.
+task run {
+    dependsOn bootRun
+}
+
+node {
+    nodeModulesDir = layout.projectDir.dir("src/main/vue").getAsFile()
+}
+
+task setupNode {
+    dependsOn npmSetup
+    dependsOn npmInstall
+}
+
+npmInstall {
+    workingDir = layout.projectDir.dir("src/main/vue").getAsFile()
+}
+
+// Run the frontend's build task.
+task frontendBuild(type: NpmTask) {
+    inputs.files fileTree("public")
+    inputs.files fileTree("src")
+    inputs.files "package.json"
+    inputs.files "package-lock.json"
+    inputs.files "index.html"
+
+    outputs.dir "dist"
+
+    workingDir = layout.projectDir.dir("src/main/vue").getAsFile()
+    args = ["run", "build"]
+
+    dependsOn setupNode
+}
+
+// Include files from build in the spring boot application.
+processResources {
+    dependsOn frontendBuild
+    from("${projectDir}/src/main/vue/dist") {
+        into 'static'
+    }
+}
+
+// Run tsc to do type checking.
+task frontendTypeCheck(type: NpmTask) {
+    inputs.files("src")
+
+    workingDir = layout.projectDir.dir("src/main/vue").getAsFile()
+    args = ["run", "type-check"]
+
+    dependsOn setupNode
+}
+
+check.dependsOn frontendTypeCheck
+
+// Run eslint for linting.
+task frontendLint(type: NpmTask) {
+    inputs.files("src")
+
+    workingDir = layout.projectDir.dir("src/main/vue").getAsFile()
+    args = ["run", "lint"]
+
+    dependsOn setupNode
+}
+
+// Spotless is a code formatter. Reformat:
+//   ./gradlew spotlessApply
+// IntelliJ Plugin:
+//   https://github.com/ragurney/spotless-intellij-gradle
+spotless {
+    java {
+        // Use Google's Java Styleguide (exception: indents use 4 spaces):
+        //   https://google.github.io/styleguide/javaguide.html
+        palantirJavaFormat()
+    }
+}
+
+// Checkstyle is a linter.
+checkstyle {
+    toolVersion '10.2'
+}

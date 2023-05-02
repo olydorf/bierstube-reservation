@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="1e3px" height="500px" version="1.1" viewBox="0 0 1e3 500" xmlns="http://www.w3.org/2000/svg">
+ <g stroke="#000">
+  <path d="m50 50h900c0.10116 133.43 0.20232 266.87 0.30348 400.3h-900c-0.10116-133.43-0.20232-266.87-0.30348-400.3z" fill="none" stroke-width="13.229"/>
+  <g>
+   <g stroke-width="12.492">
+    <rect x="86.246" y="86.246" width="87.508" height="137.51" id="table-1"/>
+    <rect x="216.25" y="86.246" width="87.508" height="137.51" id="table-2"/>
+    <rect x="346.25" y="86.246" width="87.508" height="137.51" id="table-3"/>
+    <rect x="476.25" y="86.246" width="87.508" height="137.51" id="table-4"/>
+    <rect x="606.25" y="86.246" width="87.508" height="137.51" id="table-5"/>
+    <rect x="736.25" y="86.246" width="87.508" height="137.51" id="table-6"/>
+   </g>
+   <rect x="847.25" y="84.6" width="80.799" height="80.799" stroke-width="9.2009" id="table-13"/>
+  </g>
+  <g transform="matrix(1 0 0 -1 -4.7684e-7 500)">
+   <g stroke-width="12.492">
+    <rect x="86.246" y="86.246" width="87.508" height="137.51" id="table-7"/>
+    <rect x="216.25" y="86.246" width="87.508" height="137.51" id="table-8"/>
+    <rect x="346.25" y="86.246" width="87.508" height="137.51" id="table-9"/>
+    <rect x="476.25" y="86.246" width="87.508" height="137.51" id="table-10"/>
+    <rect x="606.25" y="86.246" width="87.508" height="137.51" id="table-11"/>
+    <rect x="736.25" y="86.246" width="87.508" height="137.51" id="table-12"/>
+   </g>
+   <rect x="847.25" y="84.6" width="80.799" height="80.799" stroke-width="9.2009" id="table-14"/>
+  </g>
+ </g>
+</svg>

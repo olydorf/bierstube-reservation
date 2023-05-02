@@ -1,0 +1,43 @@
+@import "../../node_modules/bulma/bulma.sass";
+
+.card.is-clickable:hover {
+  transition: box-shadow .3s;
+  // definition copied from $shadow but increased alpha to 0.3 in first rgba
+  box-shadow: 0 0.5em 1em -0.125em rgba($scheme-invert, 0.3), 0 0px 0 1px rgba($scheme-invert, 0.02);
+}
+
+a.is-disabled {
+  color: $grey-dark;
+  cursor: not-allowed;
+}
+
+.svg-table:hover {
+  cursor: pointer;
+  stroke: $grey;
+  fill: $grey;
+}
+
+.selected-table, .selected-table:hover {
+  stroke: $info;
+  fill: $info;
+}
+
+.reserved-table, .reserved-table:hover {
+  cursor: not-allowed;
+  stroke: $grey-dark;
+  fill: $grey-dark;
+}
+
+.is-grouped {
+  display: flex;
+  align-items: center;
+}
+
+.is-grouped .label:first-child {
+  margin-left: 0;
+}
+
+.is-grouped .label {
+  margin-left: 2em;
+  margin-right: 1em;
+}

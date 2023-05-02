@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="1e3px" height="500px" version="1.1" viewBox="0 0 1e3 500" xmlns="http://www.w3.org/2000/svg">
+ <path d="m50 50h900c0.10116 133.43 0.20232 266.87 0.30348 400.3h-900c-0.10116-133.43-0.20232-266.87-0.30348-400.3z" fill="none" stroke="#000" stroke-width="13.229"/>
+ <g>
+  <path d="m106.19 86.644h180v75h-105v85h-75z" stroke="#000" stroke-width="1px" id="table-9"/>
+  <path d="m919.64 417.37h-180v-75h105v-85h75z" stroke="#000" stroke-width="1px" id="table-10"/>
+  <g stroke="#010101" stroke-width="50">
+   <rect x="128.8" y="349.75" width="49.111" height="41.75" id="table-1"/>
+   <rect x="301.49" y="332.41" width="49.111" height="41.75" id="table-2"/>
+   <rect x="825.31" y="110.93" width="52.556" height="38.099" id="table-3"/>
+   <rect x="666.19" y="177.61" width="46.92" height="48.249" id="table-4"/>
+   <rect x="526.2" y="93.237" width="46.92" height="48.249" id="table-5"/>
+   <rect x="606.22" y="348.61" width="45.052" height="47.611" id="table-6"/>
+   <rect x="368.98" y="128.06" width="43.991" height="45.639" id="table-7"/>
+   <rect x="467.18" y="264.42" width="53.186" height="38.086" id="table-8"/>
+  </g>
+ </g>
+</svg>
