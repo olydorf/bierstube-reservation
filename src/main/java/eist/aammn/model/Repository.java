@@ -201,71 +201,28 @@ public class Repository {
             int id = 0;
             Random r = new Random("AAMMN".hashCode());
 
-            List<OpenHourSlot> ohNordsee = new ArrayList<>();
-            for (DayOfWeek d : DayOfWeek.values()) {
-                if (d == DayOfWeek.SUNDAY) ohNordsee.add(new OpenHourSlot(d, LocalTime.of(11, 0), LocalTime.of(17, 0)));
-                else ohNordsee.add(new OpenHourSlot(d, LocalTime.of(8, 30), LocalTime.of(20, 0)));
-            }
 
-            List<OpenHourSlot> ohBluenile = new ArrayList<>();
-            for (DayOfWeek d : DayOfWeek.values()) {
-                if (d == DayOfWeek.SATURDAY)
-                    ohBluenile.add(new OpenHourSlot(d, LocalTime.of(18, 0), LocalTime.of(23, 0)));
-                else ohBluenile.add(new OpenHourSlot(d, LocalTime.of(18, 0), LocalTime.of(23, 59)));
-            }
 
             List<OpenHourSlot> ohTantris = new ArrayList<>();
             for (DayOfWeek d : DayOfWeek.values()) {
-                if (d == DayOfWeek.WEDNESDAY
+                if (    d == DayOfWeek.MONDAY
+                        || d == DayOfWeek.TUESDAY
+                        || d == DayOfWeek.WEDNESDAY
                         || d == DayOfWeek.THURSDAY
                         || d == DayOfWeek.FRIDAY
-                        || d == DayOfWeek.SUNDAY) {
-                    ohTantris.add(new OpenHourSlot(d, LocalTime.of(12, 0), LocalTime.of(16, 0)));
-                    ohTantris.add(new OpenHourSlot(d, LocalTime.of(18, 30), LocalTime.of(23, 59)));
+                        || d == DayOfWeek.SATURDAY) {
+                    ohTantris.add(new OpenHourSlot(d, LocalTime.of(19, 0), LocalTime.of(23, 30)));
                 }
             }
 
-            List<Table> nordseeTables =
-                    IntStream.range(1, 15).mapToObj(Table::new).toList();
-            String nordseeSVG = ResourceLoader.mustLoadString("/static/nordsee-tables.svg");
 
             List<Table> fancyTables =
                     IntStream.range(1, 11).mapToObj(Table::new).toList();
             String fancySVG = ResourceLoader.mustLoadString("/static/fancy-tables.svg");
-            Restaurant nordsee = new Restaurant(
+
+            Restaurant bierstube = new Restaurant(
                     ++id,
-                    "Nordsee",
-                    "NORDSEE covers the entire spectrum of fish products.",
-                    List.of(
-                            new URL(
-                                    "https://www.nordsee.com/fileadmin/_processed_/d/5/csm_filiale-muenchen-olympia-einkaufs-zentrum-riesstrasse-nordsee-1_36edd21c02.jpg")),
-                    Cuisine.Fish,
-                    PriceCategory.Cheap,
-                    ohNordsee,
-                    new URL(
-                            "https://www.nordsee.com/en/restaurants/detail/store/nordsee-muenchen-viktualienmarkt-249/"),
-                    new Address("Viktualienmarkt", 0, 80331, new Location(0, 0)),
-                    nordseeTables,
-                    nordseeSVG);
-            addRestaurant(nordsee);
-            Restaurant bluenile = new Restaurant(
-                    ++id,
-                    "Blue Nile",
-                    "Unser Restaurant widmet sich ganz den ostafrikantischen Spezialitäten.",
-                    List.of(
-                            new URL(
-                                    "https://media-cdn.tripadvisor.com/media/photo-s/0e/ee/d0/1a/menu-mit-diversen-gerichten.jpg")),
-                    Cuisine.Ethiopian,
-                    PriceCategory.Normal,
-                    ohBluenile,
-                    new URL("https://bluenile2.eatbu.com/?lang=de"),
-                    new Address("Viktor-Scheffel-Straße", 22, 80803, new Location(0, 0)),
-                    fancyTables,
-                    fancySVG);
-            addRestaurant(bluenile);
-            Restaurant tantris = new Restaurant(
-                    ++id,
-                    "Tantris",
+                    "Bierstube",
                     "Craftsmanship, great culinary art and lived hospitality come together at Tantris Maison Culinaire to create the ultimate sensory experience.",
                     List.of(
                             new URL(
@@ -273,11 +230,11 @@ public class Repository {
                     Cuisine.French,
                     PriceCategory.Expensive,
                     ohTantris,
-                    new URL("https://tantris.de/en/restaurant-tantris/"),
-                    new Address("Johann–Fichte–Straße", 7, 80805, new Location(0, 0)),
+                    new URL("https://www.oly-dorf.de/betriebe/bierstube-ueberblick/"),
+                    new Address("Helene-Mayer-Ring", 9, 80809, new Location(0, 0)),
                     fancyTables,
                     fancySVG);
-            addRestaurant(tantris);
+            addRestaurant(bierstube);
 
             User aziz = new User(++id, "Aziz", "aziz@example.com", randomPhoneNumber(r));
             addUser(aziz);
@@ -286,10 +243,7 @@ public class Repository {
             User nabil = new User(++id, "Nabil", "nabil@example.com", randomPhoneNumber(r));
             addUser(nabil);
 
-            addReview(new Review(nordsee, "Tacos waren lecker.", aziz, 5.));
-            addReview(new Review(nordsee, "Absolutely disgusting.", markus, 3.));
-            addReview(new Review(nordsee, "Delicious but a baby portion.", nabil, 3.));
-            addReview(new Review(bluenile, "Heaven on earth.", markus, 5.));
+
         } catch (MalformedURLException | FileNotFoundException e) {
             throw new RuntimeException("unreachable", e);
         }
