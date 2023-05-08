@@ -1,6 +1,8 @@
 package eist.aammn;
 
 import eist.aammn.model.Repository;
+import eist.aammn.model.email.EmailServiceImpl;
+import eist.aammn.model.email.ReservationConfirmationRequest;
 import eist.aammn.model.restaurant.*;
 import eist.aammn.model.search.Filter;
 import eist.aammn.model.search.SearchArea;
@@ -8,6 +10,8 @@ import eist.aammn.model.user.Reservation;
 import eist.aammn.model.user.ReservationRequest;
 import eist.aammn.model.user.Review;
 import eist.aammn.model.user.User;
+
+import java.net.URI;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -20,6 +24,7 @@ import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 @Controller
 @ResponseBody
@@ -59,6 +64,26 @@ public class ApiController {
     public Cuisine[] cuisines() {
         return Cuisine.values();
     }
+
+    @PostMapping("users")
+    public ResponseEntity<User> createUser(@RequestBody User user) {
+        User createdUser = repo.addUser(user);
+        // Build the URI for the created user
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(createdUser.getId())
+                .toUri();
+        return ResponseEntity.created(location).body(createdUser);
+    }
+    @Autowired
+    private EmailServiceImpl emailService;
+
+    @PostMapping("/send-confirmation")
+    public ResponseEntity<Void> sendReservationConfirmation(@RequestBody ReservationConfirmationRequest request) {
+        emailService.sendReservationConfirmation(request.getRecipientName(), request.getRecipientEmail());
+        return ResponseEntity.ok().build();
+    }
+
 
     @GetMapping("restaurants")
     public ResponseEntity<Set<Restaurant>> restaurants(
@@ -124,7 +149,7 @@ public class ApiController {
 
     @GetMapping("reservations")
     public ResponseEntity<Set<Reservation>> reservations() {
-        return ResponseEntity.ok(repo.getReservationsByUser(currentUser.id()));
+        return ResponseEntity.ok(repo.getReservationsByUser(currentUser.getId()));
     }
 
     @GetMapping("reservations/{id}")

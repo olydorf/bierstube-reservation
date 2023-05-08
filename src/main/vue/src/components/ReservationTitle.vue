@@ -10,7 +10,7 @@
 import type { PropType } from "vue";
 import type { Reservation } from "@/model";
 import { defineComponent } from "vue";
-import {dateToLocale, timeToLocale} from "@/time";
+import { dateToLocale, timeToLocale } from "@/time";
 
 export default defineComponent({
   props: {
@@ -19,6 +19,6 @@ export default defineComponent({
   methods: {
     dateToLocale: dateToLocale,
     timeToLocale: timeToLocale,
-  }
-})
+  },
+});
 </script>

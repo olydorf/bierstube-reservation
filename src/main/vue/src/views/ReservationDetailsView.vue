@@ -10,6 +10,11 @@
           </div>
           <div class="card-content">
             Table: {{ reservation.table.tableNumber }}
+              <br />
+              Name: {{ reservation.user.name }}
+              <br />
+              Email: {{ reservation.user.email }}
+
           </div>
         </div>
       </div>
@@ -50,8 +55,11 @@ export default defineComponent({
     timeToLocale: timeToLocale,
   },
   async mounted() {
-    this.reservation = await api.reservation(
+      console.log('Fetched reservation:', this.reservation);
+
+      this.reservation = await api.reservation(
       parseInt(this.$route.params.id as string)
+
     );
   },
 });

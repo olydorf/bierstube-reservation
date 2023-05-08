@@ -3,6 +3,47 @@
     <div class="columns">
       <div class="column is-5">
         <div class="card">
+          <!-- Add this form -->
+          <div class="card-section">
+            <form @submit.prevent="reserve">
+              <div class="field">
+                <label class="label">Name</label>
+                <div class="control">
+                  <input
+                    class="input"
+                    type="text"
+                    v-model="name"
+                    placeholder="Name"
+                    required
+                  />
+                </div>
+              </div>
+              <div class="field">
+                <label class="label">Email</label>
+                <div class="control">
+                  <input
+                    class="input"
+                    type="email"
+                    v-model="email"
+                    placeholder="Email"
+                    required
+                  />
+                </div>
+              </div>
+              <div class="field">
+                <label class="label">Phone Number</label>
+                <div class="control">
+                  <input
+                    class="input"
+                    type="tel"
+                    v-model="phone"
+                    placeholder="Phone Number"
+                    required
+                  />
+                </div>
+              </div>
+            </form>
+          </div>
           <div class="card-header">
             <p class="card-header-title">
               {{ dateToLocale(date) }}
@@ -85,7 +126,10 @@ export default defineComponent({
       time: null as null | Date,
       table: -1,
       reserved: false,
-
+      // added form data
+      name: "",
+      email: "",
+      phone: "",
       // helper
       renderedLayout: false,
       freeTablesPoller: null as null | number,
@@ -94,11 +138,24 @@ export default defineComponent({
   methods: {
     dateToLocale: dateToLocale,
     timeToLocale: timeToLocale,
+
     async reserve() {
       if (this.time == null || this.table < 0 || this.reserved) return;
       this.reserved = true;
+      const userResponse = await api.createUser({
+        name: this.name,
+        email: this.email,
+        phone: this.phone,
+      });
+      const userId = userResponse.id;
 
       let reservation = await api.reserve({
+        user: {
+          id: userId,
+          name: this.name,
+          email: this.email,
+          phone: this.phone,
+        },
         restaurant: this.restaurant.id,
         startTime: this.time.toISOString(),
         endTime: new Date(
@@ -106,6 +163,9 @@ export default defineComponent({
         ).toISOString(),
         table: this.table,
       });
+      // Send reservation confirmation email
+      await api.sendReservationConfirmationEmail(this.name, this.email);
+
       await this.$router.push(`/reservations/${reservation.id}`);
     },
     async checkFreeTables() {

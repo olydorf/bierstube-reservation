@@ -11,8 +11,9 @@ import { RouterView } from "vue-router";
     </div>
     <div class="navbar-menu">
       <div class="navbar-start">
-        <router-link class="navbar-item" to="/search"> Restaurants</router-link>
-        <router-link class="navbar-item" to="/reservations"> Reservations</router-link>
+        <router-link class="navbar-item" to="/reservations">
+          Reservations</router-link
+        >
       </div>
     </div>
   </div>

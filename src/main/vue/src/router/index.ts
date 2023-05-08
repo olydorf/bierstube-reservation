@@ -1,5 +1,4 @@
 import { createRouter, createWebHistory } from "vue-router";
-import SearchView from "@/views/SearchView.vue";
 import RestaurantDetailsView from "@/views/RestaurantDetailsView.vue";
 import CreateReservationView from "@/views/CreateReservationView.vue";
 import ReservationDetailsView from "@/views/ReservationDetailsView.vue";
@@ -12,12 +11,7 @@ const router = createRouter({
   routes: [
     {
       path: "/",
-      redirect: "/search",
-    },
-    {
-      path: "/search",
-      name: "search",
-      component: SearchView,
+      redirect: "/restaurants/1",
     },
     {
       path: "/restaurants/:id",

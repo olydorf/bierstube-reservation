@@ -3,6 +3,7 @@ import type {
   ReservationRequest,
   Restaurant,
   Review,
+  User,
 } from "@/model";
 
 const ENDPOINT_BASE = "http://localhost:8080/api";
@@ -64,6 +65,50 @@ export function reserve(req: ReservationRequest): Promise<Reservation> {
     body: JSON.stringify(req),
     headers: { "content-type": "application/json" },
   }).then((res) => res.json());
+
+
+}
+
+export async function sendReservationConfirmationEmail(
+
+  name: string,
+  email: string
+): Promise<void> {
+  const body = {
+    recipientName: name,
+    recipientEmail: email,
+  };
+
+  await fetch(ENDPOINT_BASE + "/emails/send-confirmation", {
+    method: "POST",
+    body: JSON.stringify(body),
+    headers: { "content-type": "application/json" },
+  });
+}
+
+export async function createUser(userData: {
+  name: string;
+  email: string;
+  phone: string;
+}) {
+  try {
+    const response = await fetch("/api/users", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(userData),
+    });
+
+    if (response.ok) {
+      return await response.json();
+    } else {
+      throw new Error("Error creating user");
+    }
+  } catch (error) {
+    console.error("Error in createUser():", error);
+    throw error;
+  }
 }
 
 export function reservation(id: number): Promise<Reservation> {

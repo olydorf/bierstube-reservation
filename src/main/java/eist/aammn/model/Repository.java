@@ -13,12 +13,14 @@ import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 public class Repository {
     private final HashMap<Integer, Restaurant> restaurant = new HashMap<>();
     private final HashMap<Integer, User> users = new HashMap<>();
+    private final AtomicInteger idCounter = new AtomicInteger();
     private final HashMap<Integer, HashSet<Review>> reviewsByRestaurant = new HashMap<>();
 
     private final HashMap<Integer, Reservation> reservations = new HashMap<>();
@@ -64,13 +66,14 @@ public class Repository {
     /**
      * Add a new user.
      *
+     * @return
      * @throws IllegalArgumentException if a user with the same id already exists
      */
-    public synchronized void addUser(User u) {
-        var existing = users.get(u.id());
-        if (existing == null) users.put(u.id(), u);
-        else if (!existing.equals(u))
-            throw new IllegalArgumentException("tried adding a different user with a duplicate id");
+    public synchronized User addUser(User u) {
+        int  id = idCounter.incrementAndGet();
+        u.setId(id);
+        users.put(id,u);
+        return u;
     }
 
     /**
@@ -113,7 +116,7 @@ public class Repository {
      * @throws IllegalArgumentException if a user with the same id already exists
      */
     public synchronized boolean addReservation(Reservation r) {
-        var byUser = reservationsByUser.computeIfAbsent(r.user().id(), id -> new HashSet<>());
+        var byUser = reservationsByUser.computeIfAbsent(r.user().getId(), id -> new HashSet<>());
         var byRestaurant =
                 reservationsByRestaurant.computeIfAbsent(r.restaurant().id(), id -> new HashSet<>());
         var existing = reservations.get(r.id());
@@ -139,7 +142,7 @@ public class Repository {
         Reservation prev = reservations.remove(r);
         if (prev == null) return;
 
-        reservationsByUser.getOrDefault(prev.user().id(), new HashSet<>()).remove(prev);
+        reservationsByUser.getOrDefault(prev.user().getId(), new HashSet<>()).remove(prev);
         reservationsByRestaurant
                 .getOrDefault(prev.restaurant().id(), new HashSet<>())
                 .remove(prev);
@@ -236,12 +239,6 @@ public class Repository {
                     fancySVG);
             addRestaurant(bierstube);
 
-            User aziz = new User(++id, "Aziz", "aziz@example.com", randomPhoneNumber(r));
-            addUser(aziz);
-            User markus = new User(++id, "Markus", "markus@example.com", randomPhoneNumber(r));
-            addUser(markus);
-            User nabil = new User(++id, "Nabil", "nabil@example.com", randomPhoneNumber(r));
-            addUser(nabil);
 
 
         } catch (MalformedURLException | FileNotFoundException e) {
