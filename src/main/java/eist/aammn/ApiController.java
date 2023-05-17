@@ -33,17 +33,15 @@ public class ApiController {
     static Repository globalRepository = Repository.newExampleRepo();
 
     private final Repository repo;
-    private final User currentUser;
+
 
     public ApiController() {
+
         this.repo = Repository.newExampleRepo();
-        this.currentUser = new User("AAMMN".hashCode(), "Me", "me@example.org", "+49 153 1234 5678");
-        this.repo.addUser(currentUser);
     }
 
-    public ApiController(Repository repo, User currentUser) {
+    public ApiController(Repository repo) {
         this.repo = repo;
-        this.currentUser = currentUser;
     }
 
     @Autowired
@@ -65,16 +63,6 @@ public class ApiController {
         return Cuisine.values();
     }
 
-    @PostMapping("users")
-    public ResponseEntity<User> createUser(@RequestBody User user) {
-        User createdUser = repo.addUser(user);
-        // Build the URI for the created user
-        URI location = ServletUriComponentsBuilder.fromCurrentRequest()
-                .path("/{id}")
-                .buildAndExpand(createdUser.getId())
-                .toUri();
-        return ResponseEntity.created(location).body(createdUser);
-    }
     @Autowired
     private EmailServiceImpl emailService;
 
@@ -121,6 +109,12 @@ public class ApiController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
+    @GetMapping("reservations/{id}")
+    public ResponseEntity<Reservation> reservation(@PathVariable int id) {
+        return repo.getReservation(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
     @GetMapping("restaurants/{id}/reviews")
     public ResponseEntity<Set<Review>> restaurantReviews(@PathVariable int id) {
         return ResponseEntity.ok(repo.getReviewsForRestaurant(id));
@@ -147,17 +141,15 @@ public class ApiController {
         return ResponseEntity.ok(repo.getReservationsByRestaurant(id));
     }
 
-    @GetMapping("reservations")
-    public ResponseEntity<Set<Reservation>> reservations() {
-        return ResponseEntity.ok(repo.getReservationsByUser(currentUser.getId()));
-    }
 
-    @GetMapping("reservations/{id}")
-    public ResponseEntity<Reservation> reservation(@PathVariable int id) {
-        return repo.getReservation(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
-    }
+    @GetMapping("reservations")
+    public ResponseEntity<Set<Reservation>> reservation() {
+        Set<Reservation> reservations = repo.getReservationsByRestaurant(1);
+        if (reservations.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        } else {
+            return ResponseEntity.ok(reservations);
+        }    }
 
     @GetMapping(path = "reservations/{id}/calendar.ics", produces = ICSBuilder.MIME_TYPE)
     public ResponseEntity<String> reservationCalendar(@PathVariable int id) {
@@ -167,14 +159,45 @@ public class ApiController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    @PostMapping(path = "reservations")
+    /*@PostMapping(path = "reservations")
     public ResponseEntity<Reservation> addReservation(@RequestBody ReservationRequest req) {
+
         return repo.getRestaurant(req.restaurant())
-                .flatMap(r -> req.toReservation(currentUser, r))
+                .flatMap(req::toReservation)
                 .filter(repo::addReservation)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.badRequest().build());
+    }*/
+    @PostMapping(path = "reservations")
+    public ResponseEntity<Reservation> addReservation(@RequestBody ReservationRequest req) {
+        // Fetch the restaurant based on the request
+        Optional<Restaurant> optionalRestaurant = repo.getRestaurant(req.restaurant());
+
+        // Check if the restaurant exists
+        if (!optionalRestaurant.isPresent()) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        // Create a reservation from the request
+        Optional<Reservation> optionalReservation = req.toReservation(optionalRestaurant.get());
+
+        // Check if reservation could be created
+        if (!optionalReservation.isPresent()) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        // Add reservation to the repository
+        boolean isReservationAdded = repo.addReservation(optionalReservation.get());
+
+        // Check if the reservation was successfully added
+        if (!isReservationAdded) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        // Return the created reservation
+        return ResponseEntity.ok(optionalReservation.get());
     }
+
 
     @PutMapping(path = "reservations/{id}/confirmed")
     public ResponseEntity<Void> confirmReservation(@PathVariable int id, @RequestBody boolean confirm) {

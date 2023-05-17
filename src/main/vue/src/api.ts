@@ -79,37 +79,14 @@ export async function sendReservationConfirmationEmail(
     recipientEmail: email,
   };
 
-  await fetch(ENDPOINT_BASE + "/emails/send-confirmation", {
+  await fetch(ENDPOINT_BASE + "/send-confirmation", {
     method: "POST",
     body: JSON.stringify(body),
     headers: { "content-type": "application/json" },
   });
 }
 
-export async function createUser(userData: {
-  name: string;
-  email: string;
-  phone: string;
-}) {
-  try {
-    const response = await fetch("/api/users", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(userData),
-    });
 
-    if (response.ok) {
-      return await response.json();
-    } else {
-      throw new Error("Error creating user");
-    }
-  } catch (error) {
-    console.error("Error in createUser():", error);
-    throw error;
-  }
-}
 
 export function reservation(id: number): Promise<Reservation> {
   return get("/reservations/" + id);
@@ -118,6 +95,7 @@ export function reservation(id: number): Promise<Reservation> {
 export function reservations(): Promise<Array<Reservation>> {
   return get("/reservations");
 }
+
 
 export function freeTablesAt(
   restaurant: number,

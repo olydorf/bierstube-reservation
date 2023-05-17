@@ -57,10 +57,7 @@ export default defineComponent({
   async mounted() {
       console.log('Fetched reservation:', this.reservation);
 
-      this.reservation = await api.reservation(
-      parseInt(this.$route.params.id as string)
-
-    );
+      this.reservation = await api.reservation(this.reservation.id);
   },
 });
 </script>

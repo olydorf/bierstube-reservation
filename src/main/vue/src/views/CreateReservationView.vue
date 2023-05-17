@@ -142,16 +142,9 @@ export default defineComponent({
     async reserve() {
       if (this.time == null || this.table < 0 || this.reserved) return;
       this.reserved = true;
-      const userResponse = await api.createUser({
-        name: this.name,
-        email: this.email,
-        phone: this.phone,
-      });
-      const userId = userResponse.id;
 
       let reservation = await api.reserve({
         user: {
-          id: userId,
           name: this.name,
           email: this.email,
           phone: this.phone,
@@ -166,7 +159,7 @@ export default defineComponent({
       // Send reservation confirmation email
       await api.sendReservationConfirmationEmail(this.name, this.email);
 
-      await this.$router.push(`/reservations/${reservation.id}`);
+      await this.$router.push(`/reservations`);
     },
     async checkFreeTables() {
       if (this.time == null) return;

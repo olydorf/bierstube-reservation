@@ -60,7 +60,6 @@ export interface Reservation {
 }
 
 export const LOADING_USER: User = {
-  id: 0,
   name: "",
   email: "",
   phone: "",
@@ -75,7 +74,6 @@ export const LOADING_RESERVATION: Reservation = {
 };
 
 export interface User {
-  id: number;
   name: string;
   email: string;
   phone: string;

@@ -19,7 +19,6 @@ import java.util.stream.IntStream;
 
 public class Repository {
     private final HashMap<Integer, Restaurant> restaurant = new HashMap<>();
-    private final HashMap<Integer, User> users = new HashMap<>();
     private final AtomicInteger idCounter = new AtomicInteger();
     private final HashMap<Integer, HashSet<Review>> reviewsByRestaurant = new HashMap<>();
 
@@ -63,25 +62,6 @@ public class Repository {
                 .collect(Collectors.toSet());
     }
 
-    /**
-     * Add a new user.
-     *
-     * @return
-     * @throws IllegalArgumentException if a user with the same id already exists
-     */
-    public synchronized User addUser(User u) {
-        int  id = idCounter.incrementAndGet();
-        u.setId(id);
-        users.put(id,u);
-        return u;
-    }
-
-    /**
-     * Return the user with the given id.
-     */
-    public synchronized Optional<User> getUser(int id) {
-        return Optional.ofNullable(users.get(id));
-    }
 
     /**
      * Add a review.
@@ -116,7 +96,6 @@ public class Repository {
      * @throws IllegalArgumentException if a user with the same id already exists
      */
     public synchronized boolean addReservation(Reservation r) {
-        var byUser = reservationsByUser.computeIfAbsent(r.user().getId(), id -> new HashSet<>());
         var byRestaurant =
                 reservationsByRestaurant.computeIfAbsent(r.restaurant().id(), id -> new HashSet<>());
         var existing = reservations.get(r.id());
@@ -127,7 +106,6 @@ public class Repository {
             }
 
             reservations.put(r.id(), r);
-            byUser.add(r);
             byRestaurant.add(r);
             return true;
         } else if (!existing.equals(r))
@@ -137,7 +115,7 @@ public class Repository {
 
     /**
      * Remove a reservation with the given id.
-     */
+
     public synchronized void removeReservation(int r) {
         Reservation prev = reservations.remove(r);
         if (prev == null) return;
@@ -147,7 +125,7 @@ public class Repository {
                 .getOrDefault(prev.restaurant().id(), new HashSet<>())
                 .remove(prev);
         confirmedReservations.remove(r);
-    }
+    }*/
 
     /**
      * Confirm the reservation with the given id.
