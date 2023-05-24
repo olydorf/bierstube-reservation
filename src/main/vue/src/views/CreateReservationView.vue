@@ -73,10 +73,10 @@
           <div class="card-footer">
             <a
               class="card-footer-item"
-              :class="time === null || table < 0 ? 'is-disabled' : ''"
+              :class="time === null || table.id < 0 ? 'is-disabled' : ''"
               :title="
                 (time === null ? 'Select a time first\n' : '') +
-                (table < 0 ? 'Select a table first' : '')
+                (table.id < 0 ? 'Select a table first' : '')
               "
               @click="reserve()"
             >
@@ -124,7 +124,7 @@ export default defineComponent({
 
       // user selected
       time: null as null | Date,
-      table: { tableNumber: 0 },
+      table: { id: 0 },
       reserved: false,
       // added form data
       name: "",
@@ -140,7 +140,7 @@ export default defineComponent({
     timeToLocale: timeToLocale,
 
     async reserve() {
-      if (this.time == null || this.table.tableNumber < 0 || this.reserved) return;
+      if (this.time == null || this.table.id < 0 || this.reserved) return;
       this.reserved = true;
 
       let reservation = await api.reserve({
@@ -149,12 +149,11 @@ export default defineComponent({
           email: this.email,
           phone: this.phone,
         },
-        restaurant: this.restaurant,
         startTime: this.time.toISOString(),
         endTime: new Date(
           this.time.getTime() + RESERVATION_DURATION
         ).toISOString(),
-        table: this.table,
+        restaurantTable: this.table,
       });
       // Send reservation confirmation email
       await api.sendReservationConfirmationEmail(this.name, this.email);
@@ -164,14 +163,14 @@ export default defineComponent({
     async checkFreeTables() {
       if (this.time == null) return;
       this.freeTables = await api.freeTablesAt(this.time);
-      if (!this.freeTables.includes(this.table.tableNumber)) this.table.tableNumber = -1;
+      if (!this.freeTables.includes(this.table.id)) this.table.id = -1;
       this.renderLayout(true);
     },
     renderLayout(force: boolean) {
       if (this.renderedLayout && !force) return;
       for (let table of this.restaurant.tables) {
         let svg = document.getElementById(
-          "table-" + table.tableNumber
+          "table-" + table.id
         ) as unknown as SVGElement;
         if (svg) this.renderedLayout = true;
         svg.classList.remove(
@@ -181,14 +180,14 @@ export default defineComponent({
           "disabled-table"
         );
         svg.classList.add("svg-table");
-        if (table.tableNumber == this.table.tableNumber)
+        if (table.id == this.table.id)
           svg.classList.add("selected-table");
-        if (!this.freeTables.includes(table.tableNumber))
+        if (!this.freeTables.includes(table.id))
           svg.classList.add("reserved-table");
         let t = this;
         svg.onclick = () => {
-          if (!t.freeTables.includes(table.tableNumber)) return;
-          t.table.tableNumber = table.tableNumber;
+          if (!t.freeTables.includes(table.id)) return;
+          t.table.id = table.id;
           t.renderLayout(true);
         };
       }

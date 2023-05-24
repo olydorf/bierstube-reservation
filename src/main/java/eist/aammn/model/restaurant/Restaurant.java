@@ -53,10 +53,10 @@ public class Restaurant {
     }
 
     private static final List<RestaurantTable> TABLES=Tables;
-    private static final String LAYOUT_SVG=fancySVG;
+    private static final String LAYOUTSVG=fancySVG;
 
     public RestaurantDTO toDTO() {
-        return new RestaurantDTO(NAME, OPENING_HOURS, TABLES,LAYOUT_SVG);
+        return new RestaurantDTO(NAME, OPENING_HOURS, TABLES,LAYOUTSVG);
     }
 
 }

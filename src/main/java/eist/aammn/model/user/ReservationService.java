@@ -34,8 +34,9 @@ public class ReservationService {
 
     public Reservation createReservation(UserR user, LocalDateTime startTime, LocalDateTime endTime, RestaurantTable table) {
         Set<RestaurantTable> freeTables = getFreeTables(startTime);
-
-        if (!freeTables.contains(table)) {
+        boolean free = freeTables.stream()
+                .anyMatch(t -> t.getId() == table.getId());
+        if (!free) {
             throw new IllegalStateException("Table is already reserved at the specified time");
         }
 

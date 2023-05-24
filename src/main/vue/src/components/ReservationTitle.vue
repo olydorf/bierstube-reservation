@@ -1,5 +1,4 @@
 <template>
-  {{ reservation.restaurant.name }}
   on
   {{ dateToLocale(reservation.startTime) }}
   at

@@ -45,11 +45,11 @@ public class ReservationRequestDTO {
         this.endTime = endTime;
     }
 
-    public RestaurantTable getTable() {
+    public RestaurantTable getRestaurantTable() {
         return restaurantTable;
     }
 
-    public void setTable(RestaurantTable table) {
+    public void setRestaurantTable(RestaurantTable table) {
         this.restaurantTable = table;
     }
 }

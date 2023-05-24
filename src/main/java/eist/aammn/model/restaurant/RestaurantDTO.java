@@ -8,21 +8,21 @@ public class RestaurantDTO {
     private List<OpenHourSlot> openingHours;
     private List<RestaurantTable> tables;
 
-    public String getLAYOUT_SVG() {
-        return LAYOUT_SVG;
+    public String getLayoutSvg() {
+        return this.layoutSvg;
     }
 
-    public void setLAYOUT_SVG(String LAYOUT_SVG) {
-        this.LAYOUT_SVG = LAYOUT_SVG;
+    public void setLayoutSvg(String layoutSvg) {
+        this.layoutSvg = layoutSvg;
     }
 
-    private String LAYOUT_SVG;
+    private String layoutSvg;
 
     public RestaurantDTO(String name, List<OpenHourSlot> openingHours, List<RestaurantTable> tables, String layout) {
         this.name = name;
         this.openingHours = openingHours;
         this.tables = tables;
-        this.LAYOUT_SVG=layout;
+        this.layoutSvg=layout;
     }
 
     public String getName() {

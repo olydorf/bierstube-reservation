@@ -9,7 +9,7 @@
             </p>
           </div>
           <div class="card-content">
-            Table: {{ reservation.table.tableNumber }}
+            Table: {{ reservation.restaurantTable.id }}
               <br />
               Name: {{ reservation.user.name }}
               <br />

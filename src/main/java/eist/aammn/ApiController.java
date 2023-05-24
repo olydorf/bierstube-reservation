@@ -119,7 +119,7 @@ public class ApiController {
                 UserR user = reservationDTO.getUser();
                 LocalDateTime startTime = reservationDTO.getStartTime();
                 LocalDateTime endTime = reservationDTO.getEndTime();
-                RestaurantTable table = reservationDTO.getTable();
+                RestaurantTable table = reservationDTO.getRestaurantTable();
 
                 Reservation reservation = reservationService.createReservation(user, startTime, endTime, table);
 

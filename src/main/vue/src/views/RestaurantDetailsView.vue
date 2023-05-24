@@ -32,9 +32,6 @@
             </tbody>
           </table>
         </section>
-          <div class="card-content">
-              <div v-html="restaurant.layoutSvg"></div>
-          </div>
       </div>
     </div>
   </div>
@@ -54,9 +51,6 @@ export default defineComponent({
   },
   async mounted() {
     this.restaurant = await api.restaurant();
-    console.log("fifjirjfri")
-      console.log(this.restaurant.name);
-      console.log(this.restaurant.layoutSvg);
 
   },
   methods: {
