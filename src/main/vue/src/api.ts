@@ -2,7 +2,6 @@ import type {
   Reservation,
   ReservationRequest,
   Restaurant,
-  Review,
   User,
 } from "@/model";
 
@@ -29,35 +28,9 @@ export function get<T>(ep: string, cached = false): Promise<T> {
   return p;
 }
 
-export function cuisines(): Promise<Array<string>> {
-  return get("/cuisines", true);
-}
 
-export function restaurants(
-  name: string,
-  cuisines: string[],
-  minPrice: string,
-  maxPrice: string,
-  minRating: number
-): Promise<Array<Restaurant>> {
-  return get(
-    `/restaurants?name=${encodeURI(name)}&cuisines=${cuisines.join(
-      ","
-    )}&minPrice=${minPrice}&maxPrice=${maxPrice}&minRating=${minRating}`
-  );
-}
 
-export function restaurant(id: number): Promise<Restaurant> {
-  return get("/restaurants/" + id);
-}
 
-export function restaurantRating(id: number): Promise<number> {
-  return get("/restaurants/" + id + "/reviews/avg");
-}
-
-export function reviews(id: number): Promise<Array<Review>> {
-  return get("/restaurants/" + id + "/reviews");
-}
 
 export function reserve(req: ReservationRequest): Promise<Reservation> {
   return fetch(ENDPOINT_BASE + "/reservations", {
@@ -96,10 +69,13 @@ export function reservations(): Promise<Array<Reservation>> {
   return get("/reservations");
 }
 
+export function restaurant(): Promise<Restaurant>{
+  return get("/restaurant");
+}
+
 
 export function freeTablesAt(
-  restaurant: number,
   date: Date
 ): Promise<number[]> {
-  return get(`/restaurants/${restaurant}/tables/freeAt/${date.toISOString()}`);
+  return get(`/tables/freeAt/${date.toISOString()}`);
 }

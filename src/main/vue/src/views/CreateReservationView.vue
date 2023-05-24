@@ -124,7 +124,7 @@ export default defineComponent({
 
       // user selected
       time: null as null | Date,
-      table: -1,
+      table: { tableNumber: 0 },
       reserved: false,
       // added form data
       name: "",
@@ -140,7 +140,7 @@ export default defineComponent({
     timeToLocale: timeToLocale,
 
     async reserve() {
-      if (this.time == null || this.table < 0 || this.reserved) return;
+      if (this.time == null || this.table.tableNumber < 0 || this.reserved) return;
       this.reserved = true;
 
       let reservation = await api.reserve({
@@ -149,7 +149,7 @@ export default defineComponent({
           email: this.email,
           phone: this.phone,
         },
-        restaurant: this.restaurant.id,
+        restaurant: this.restaurant,
         startTime: this.time.toISOString(),
         endTime: new Date(
           this.time.getTime() + RESERVATION_DURATION
@@ -163,8 +163,8 @@ export default defineComponent({
     },
     async checkFreeTables() {
       if (this.time == null) return;
-      this.freeTables = await api.freeTablesAt(this.restaurant.id, this.time);
-      if (!this.freeTables.includes(this.table)) this.table = -1;
+      this.freeTables = await api.freeTablesAt(this.time);
+      if (!this.freeTables.includes(this.table.tableNumber)) this.table.tableNumber = -1;
       this.renderLayout(true);
     },
     renderLayout(force: boolean) {
@@ -181,14 +181,14 @@ export default defineComponent({
           "disabled-table"
         );
         svg.classList.add("svg-table");
-        if (table.tableNumber == this.table)
+        if (table.tableNumber == this.table.tableNumber)
           svg.classList.add("selected-table");
         if (!this.freeTables.includes(table.tableNumber))
           svg.classList.add("reserved-table");
         let t = this;
         svg.onclick = () => {
           if (!t.freeTables.includes(table.tableNumber)) return;
-          t.table = table.tableNumber;
+          t.table.tableNumber = table.tableNumber;
           t.renderLayout(true);
         };
       }
@@ -205,12 +205,11 @@ export default defineComponent({
     },
   },
   async mounted() {
-    let id = parseInt(this.$route.params.id as string);
     this.weekDay = this.weekDay as string;
-    this.restaurant = await api.restaurant(id);
+    this.restaurant = await api.restaurant();
     let nextNthDay = nextOccurrenceOfWeekDay(this.weekDay);
     if (nextNthDay == null) {
-      await this.$router.replace(`/restaurants/${id}`);
+      await this.$router.replace(`/restaurant`);
       return;
     }
     this.date = nextNthDay;

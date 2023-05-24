@@ -11,15 +11,15 @@ const router = createRouter({
   routes: [
     {
       path: "/",
-      redirect: "/restaurants/1",
+      redirect: "/restaurant",
     },
     {
-      path: "/restaurants/:id",
+      path: "/restaurant",
       name: "restaurant",
       component: RestaurantDetailsView,
     },
     {
-      path: "/restaurants/:id/reserve",
+      path: "/reserve",
       name: "reserve",
       component: CreateReservationView,
     },

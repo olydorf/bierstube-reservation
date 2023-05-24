@@ -11,9 +11,6 @@
             <reservation-title :reservation="reservation" />
           </div>
         </div>
-        <p class="card-content">
-          {{ reservation.restaurant.description }}
-        </p>
       </div>
     </router-link>
   </section>

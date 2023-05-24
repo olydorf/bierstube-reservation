@@ -1,12 +1,9 @@
 <template>
-  <router-link :to="'/restaurants/' + restaurant.id">
+  <router-link :to="'/restaurants/'">
     <div class="card is-clickable" style="margin-bottom: 1em">
       <div class="card-header">
         <div class="card-header-title">{{ restaurant.name }}</div>
       </div>
-      <p class="card-content">
-        {{ restaurant.description }}
-      </p>
       <!-- TODO add more details and maybe a picture -->
     </div>
   </router-link>
