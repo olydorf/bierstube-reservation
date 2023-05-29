@@ -41,7 +41,7 @@ public class ReservationService {
         }
 
         Reservation reservation = new Reservation(user, startTime, endTime, table);
-        return reservationRepository.save(reservation);
+                 return reservationRepository.save(reservation);
     }
 
     public Set<RestaurantTable> getFreeTables(LocalDateTime time) {
