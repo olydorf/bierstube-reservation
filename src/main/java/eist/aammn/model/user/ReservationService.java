@@ -16,12 +16,19 @@ import java.util.stream.Collectors;
 public class ReservationService {
 
     private final ReservationRepository reservationRepository;
+    private  final TableRepository tableRepository;
+
+    private  final UserRRepository userRRepository;
+
 
     @Autowired
     private Restaurant restaurant;
     @Autowired
-    public ReservationService(ReservationRepository reservationRepository) {
+    public ReservationService(ReservationRepository reservationRepository, TableRepository tableRepository, UserRRepository userRRepository, Restaurant restaurant) {
         this.reservationRepository = reservationRepository;
+        this.tableRepository = tableRepository;
+        this.userRRepository = userRRepository;
+        this.restaurant = restaurant;
     }
 
     public List<Reservation> getAllReservations() {
@@ -39,8 +46,19 @@ public class ReservationService {
         if (!free) {
             throw new IllegalStateException("Table is already reserved at the specified time");
         }
+        // Check if the user exists in the database
+        Optional<UserR> optionalUser = userRRepository.findUserByEmail(user.getEmail());
 
-        Reservation reservation = new Reservation(user, startTime, endTime, table);
+        UserR managedUserR;
+        if (optionalUser.isPresent()) {
+            // User exists, use the existing user
+            managedUserR = optionalUser.get();
+        } else {
+            // User does not exist, create a new user
+            managedUserR = userRRepository.save(user);
+        }
+        RestaurantTable managedTable = tableRepository.save(table);
+        Reservation reservation = new Reservation(managedUserR, startTime, endTime, managedTable);
                  return reservationRepository.save(reservation);
     }
 

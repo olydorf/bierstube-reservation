@@ -3,16 +3,14 @@ package eist.aammn.model.restaurant;
 /**
  * A table in a restaurant.
  */
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 @Entity
 public class RestaurantTable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "table_number")
     private int id;
 
 
@@ -20,8 +18,8 @@ public class RestaurantTable {
     public RestaurantTable() {}
 
     // Argument constructor
-    public RestaurantTable(int tableNumber) {
-        this.id= tableNumber;
+    public RestaurantTable(int id) {
+        this.id= id;
     }
 
     // Getters and setters
