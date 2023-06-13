@@ -21,6 +21,9 @@ public class UserR {
     @Column(nullable = false)
     private String phone;
 
+    @Column(nullable = false)
+    private String password;
+
     // You must have a default constructor for Hibernate to work properly
     public UserR() {}
 
@@ -62,5 +65,13 @@ public class UserR {
 
     public void setPhone(String phone) {
         this.phone = phone;
+    }
+
+    public String getPassword() {
+    return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 }

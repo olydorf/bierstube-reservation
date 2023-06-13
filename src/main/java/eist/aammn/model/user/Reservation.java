@@ -28,13 +28,16 @@ public class Reservation {
     @Column(name = "end_time", nullable = false)
     private LocalDateTime endTime;
 
-    public RestaurantTable getRestaurantTable() {
-        return restaurantTable;
-    }
+    @Column(name = "confirmed", nullable = false)
+    private boolean status;
 
     @OneToOne
     @JoinColumn(name = "table_id", nullable = false)
-    private RestaurantTable restaurantTable;
+    private RestaurantTable restaurantTable;    
+
+    public RestaurantTable getRestaurantTable() {
+        return restaurantTable;
+    }
 
     // Default constructor is needed by JPA
     public Reservation() {}
@@ -48,6 +51,10 @@ public class Reservation {
     }
 
     // Add getter and setter methods for all fields here
+
+    public void setStatus(boolean status){
+        this.status = true;
+    }
 
     public boolean overlapsWith(LocalDateTime time) {
         time = time.plus(1, ChronoUnit.SECONDS);

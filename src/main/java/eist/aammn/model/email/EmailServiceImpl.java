@@ -31,10 +31,9 @@ public class EmailServiceImpl implements EmailService {
 
     @Async
     @Override
-    public CompletableFuture<String> resetPassword(String userEmail) {
+    public CompletableFuture<String> sendPasswordResetEmail(String userEmail, String newPassword) {
 
         //TODO: Check against DB, change password and send the new one in the email. Hash?
-        String newPassword = UUID.randomUUID().toString().substring(0, 16);
 
         try {
             Thread.sleep(2000); // Simulating a delay of 2 seconds
