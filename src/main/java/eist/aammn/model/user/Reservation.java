@@ -31,6 +31,9 @@ public class Reservation {
     @Column(name = "confirmed", nullable = false)
     private boolean status;
 
+    @Column(name = "amount_guests", nullable = false)
+    private int amountGuests;
+
     @OneToOne
     @JoinColumn(name = "table_id", nullable = false)
     private RestaurantTable restaurantTable;    
@@ -43,17 +46,29 @@ public class Reservation {
     public Reservation() {}
 
     // You can also create a constructor for easier object creation
-    public Reservation(UserR user, LocalDateTime startTime, LocalDateTime endTime, RestaurantTable restaurantTable) {
+    public Reservation(UserR user, LocalDateTime startTime, LocalDateTime endTime, RestaurantTable restaurantTable, int amountGuests) {
         this.user = user;
         this.startTime = startTime;
         this.endTime = endTime;
         this.restaurantTable = restaurantTable;
+        this.amountGuests = amountGuests;
     }
 
     // Add getter and setter methods for all fields here
+    public boolean getStatus(){
+        return status;
+    }
 
     public void setStatus(boolean status){
         this.status = true;
+    }
+
+    public int getAmountGuests(){
+        return amountGuests;
+    }
+
+    public UserR getUser(){
+        return user;
     }
 
     public boolean overlapsWith(LocalDateTime time) {

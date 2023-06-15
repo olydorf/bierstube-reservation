@@ -1,5 +1,6 @@
 package eist.aammn.model.email;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
@@ -8,6 +9,8 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+
+import eist.aammn.model.user.Reservation;
 
 @Service
 public class EmailServiceImpl implements EmailService {
@@ -27,6 +30,21 @@ public class EmailServiceImpl implements EmailService {
         message.setSubject("Reservation Confirmation");
         message.setText("Dear " + recipientName + ",\n\nThank you for making a reservation with us.\n\nWe look forward to seeing you soon!\n\nBest regards,\nBierstube Team");
         javaMailSender.send(message);
+    }
+
+    @Async
+    @Override
+    public CompletableFuture<String> notifyReservationEmail(String recipientName, Reservation reservation) {
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setFrom(FROM_EMAIL_ADRESS);
+        message.setTo(recipientName);
+        message.setSubject("Reservation Confirmation Notification");
+        message.setText("Dear Worker,\n\nYou have a reservation confirmation request from customer " + reservation.getUser().getEmail() +
+         "\n\nPlease confirm the reservation as soon as possible.\n\nBest regards,\n Reservation Platform");
+
+        javaMailSender.send(message);
+
+        return CompletableFuture.completedFuture("Notification email sent");
     }
 
     @Async

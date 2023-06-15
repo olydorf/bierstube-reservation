@@ -39,13 +39,15 @@ public class ReservationService {
         return reservationRepository.findById(id);
     }
 
-    public Reservation createReservation(UserR user, LocalDateTime startTime, LocalDateTime endTime, RestaurantTable table) {
+    public Reservation createReservation(UserR user, LocalDateTime startTime, LocalDateTime endTime, RestaurantTable table, int amountGuests) {
         Set<RestaurantTable> freeTables = getFreeTables(startTime);
         boolean free = freeTables.stream()
                 .anyMatch(t -> t.getId() == table.getId());
         if (!free) {
             throw new IllegalStateException("Table is already reserved at the specified time");
         }
+        // TODO: check if amount guests makes sence 
+
         // Check if the user exists in the database
         Optional<UserR> optionalUser = userRRepository.findUserByEmail(user.getEmail());
 
@@ -58,7 +60,7 @@ public class ReservationService {
             managedUserR = userRRepository.save(user);
         }
         RestaurantTable managedTable = tableRepository.save(table);
-        Reservation reservation = new Reservation(managedUserR, startTime, endTime, managedTable);
+        Reservation reservation = new Reservation(managedUserR, startTime, endTime, managedTable, amountGuests);
                  return reservationRepository.save(reservation);
     }
 
