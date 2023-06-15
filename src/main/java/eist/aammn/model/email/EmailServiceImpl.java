@@ -1,7 +1,5 @@
 package eist.aammn.model.email;
 
-import java.time.LocalDateTime;
-import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 import org.springframework.beans.factory.annotation.Qualifier;

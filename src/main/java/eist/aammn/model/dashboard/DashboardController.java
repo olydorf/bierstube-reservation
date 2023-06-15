@@ -43,9 +43,9 @@ public class DashboardController {
 
             if(reservation.getAmountGuests() > 8){
               emailService.notifyReservationEmail("info@biertube.de", reservation);
-              // TODO: add more logic here
+              // TODO: add more logic here, probably in Dashboard Service
             }
-            
+
             reservation.setStatus(true);
             _reservationService.saveReservation(reservation); // TODO: replace void with CompletableFuture ? Check if save successfull
 

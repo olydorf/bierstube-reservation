@@ -46,7 +46,11 @@ public class ReservationService {
         if (!free) {
             throw new IllegalStateException("Table is already reserved at the specified time");
         }
-        // TODO: check if amount guests makes sence 
+        
+        // TODO: confirmation needed 
+        if (amountGuests > 8){
+            // email service send an email
+        }
 
         // Check if the user exists in the database
         Optional<UserR> optionalUser = userRRepository.findUserByEmail(user.getEmail());
