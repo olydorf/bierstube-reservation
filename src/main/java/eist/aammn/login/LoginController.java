@@ -62,7 +62,7 @@ public class LoginController {
     @PostMapping("/delete-user")
     public String deleteUser(@RequestParam("username") String username, @RequestParam("email") String email,
             Model model) {
-        boolean userExists = loginService.existsByUsernameOrEmail(username, email);
+        var userExists = loginService.existsByUsernameOrEmail(username, email);
 
         if (!userExists) {
             model.addAttribute("error", "User not found");

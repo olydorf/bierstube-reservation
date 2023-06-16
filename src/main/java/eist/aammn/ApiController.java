@@ -121,7 +121,8 @@ public class ApiController {
                 LocalDateTime endTime = reservationDTO.getEndTime();
                 RestaurantTable table = reservationDTO.getRestaurantTable();
 
-                Reservation reservation = reservationService.createReservation(user, startTime, endTime, table);
+                //TODO: add guess amount
+                Reservation reservation = reservationService.createReservation(user, startTime, endTime, table, 0);
 
                 return ResponseEntity.status(HttpStatus.CREATED).body(reservation);
         } catch (IllegalStateException e) {

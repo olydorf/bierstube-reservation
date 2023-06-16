@@ -22,7 +22,7 @@ public class EmailServiceImpl implements EmailService {
 
     @Override
     public void sendReservationConfirmation(String recipientName, String recipientEmail) {
-        SimpleMailMessage message = new SimpleMailMessage();
+        var message = new SimpleMailMessage();
         message.setFrom(FROM_EMAIL_ADRESS); // set the "from" address here
         message.setTo(recipientEmail);
         message.setSubject("Reservation Confirmation");
@@ -33,7 +33,7 @@ public class EmailServiceImpl implements EmailService {
     @Async
     @Override
     public CompletableFuture<String> notifyReservationEmail(String recipientName, Reservation reservation) {
-        SimpleMailMessage message = new SimpleMailMessage();
+        var message = new SimpleMailMessage();
         message.setFrom(FROM_EMAIL_ADRESS);
         message.setTo(recipientName);
         message.setSubject("Reservation Confirmation Notification");
@@ -57,7 +57,7 @@ public class EmailServiceImpl implements EmailService {
             e.printStackTrace();
         }
 
-        SimpleMailMessage message = new SimpleMailMessage();
+        var message = new SimpleMailMessage();
         message.setFrom(FROM_EMAIL_ADRESS); 
         message.setTo(userEmail);
         message.setSubject("Password Reset Bierstube Reservation Platform");
