@@ -46,8 +46,8 @@ public class Reservation {
     public Reservation() {}
 
     // You can also create a constructor for easier object creation
-    public Reservation(UserR user, LocalDateTime startTime, LocalDateTime endTime, RestaurantTable restaurantTable, int amountGuests) {
-        this.user = user;
+    public Reservation(String name, String email, LocalDateTime startTime, LocalDateTime endTime, RestaurantTable restaurantTable, int amountGuests) {
+        //this.user = user;
         this.startTime = startTime;
         this.endTime = endTime;
         this.restaurantTable = restaurantTable;

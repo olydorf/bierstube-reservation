@@ -64,7 +64,7 @@ public class ReservationService {
             managedUserR = userRRepository.save(user);
         }
         RestaurantTable managedTable = tableRepository.save(table);
-        Reservation reservation = new Reservation(managedUserR, startTime, endTime, managedTable, amountGuests);
+        Reservation reservation = new Reservation("name", "@gmail", startTime, endTime, managedTable, amountGuests);
                  return reservationRepository.save(reservation);
     }
 

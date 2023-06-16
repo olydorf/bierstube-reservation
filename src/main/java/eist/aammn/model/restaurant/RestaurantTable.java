@@ -13,6 +13,10 @@ public class RestaurantTable {
     @Column(name = "table_number")
     private int id;
 
+    private int amounGuests;
+
+    private boolean status;
+
 
     // No-argument constructor
     public RestaurantTable() {}
