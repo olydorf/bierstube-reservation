@@ -6,6 +6,7 @@ import java.security.SecureRandom;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -17,7 +18,7 @@ import eist.aammn.model.user.UserRRepository;
 public class LoginService {
     private final UserRRepository userRepository;
     private final EmailService emailService;
-    //private final PasswordEncoder passwordEncoder;
+    private final PasswordEncoder passwordEncoder;
 
     Logger logger = LoggerFactory.getLogger(LoginService.class);
 
@@ -25,7 +26,7 @@ public class LoginService {
     public LoginService(UserRRepository userRepository, EmailService emailService) {
         this.userRepository = userRepository;
         this.emailService = emailService;
-       // this.passwordEncoder = new BCryptPasswordEncoder();
+        this.passwordEncoder = new BCryptPasswordEncoder();
     }
 
     public CompletableFuture<Boolean> login(String username, String password) {
@@ -34,10 +35,15 @@ public class LoginService {
         return CompletableFuture.supplyAsync(() -> {
             var userOptional = userRepository.findByUsername(username);
             if (userOptional.isPresent()) {
-            //&& passwordEncoder.matches(password, user.getPassword())) {
-                // Login successful TODO: redirect to admin panel
-                var user = userOptional.get();
-                return true;
+
+                var user = userOptional.get();                
+                if (passwordEncoder.matches(password, user.getPassword())) {
+                    
+                    logger.info("Password match.");
+                    return true;
+                }
+                logger.info("Password does not match.");
+                return false;
             }
             logger.warn("Username is not found.");
             // Login failed TODO: redirect to login with error message
@@ -55,32 +61,34 @@ public class LoginService {
 
                 var newPassword = generateNewPassword();
                 logger.debug("New generated password is "+ newPassword);
-                // user.setPassword(passwordEncoder.encode(newPassword));
+                user.setPassword(passwordEncoder.encode(newPassword));
                 userRepository.save(user);
 
                 emailService.sendPasswordResetEmail(user.getEmail(), newPassword);
-                return true; // Password reset successful
+                logger.info("Password reset successful");
+                return true;
             } else {
-                return false; // User not found
+                logger.error("User not found");
+                return false;
             }
         });
     }
 
     public CompletableFuture<Void> addUser(String email, String username, String password) {
-        if (userRepository.existsByUsernameOrEmail(username, email)) {
+        if (userRepository.existsByUsername(username)) {
             throw new IllegalArgumentException("User already exists");
         }
 
         var newUser = new UserR();
         newUser.setEmail(email);
         newUser.setName(username);
-        // newUser.setPassword(passwordEncoder.encode(password));
+        newUser.setPassword(passwordEncoder.encode(password));
 
         return CompletableFuture.runAsync(() -> userRepository.save(newUser));
     }
 
-    public Boolean existsByUsernameOrEmail(String username, String email) {
-         return userRepository.existsByUsernameOrEmail(username, email);
+    public Boolean existsByUsername(String username) {
+         return userRepository.existsByUsername(username);
     }
 
     public CompletableFuture<Void> deleteUserByUsernameOrEmail(String username, String email) {

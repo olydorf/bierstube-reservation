@@ -1,12 +1,21 @@
 package eist.aammn.model.user;
 
+import java.util.Collection;
+
 import javax.persistence.*;
+
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 /**
  * A user.
  */
 @Entity
 public class UserR {
+//extends User{ TODO: find out if it works with Hibernate
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -27,6 +36,10 @@ public class UserR {
     // You must have a default constructor for Hibernate to work properly
     public UserR() {}
 
+    /*public UserR(String username, String password, Collection<? extends GrantedAuthority> authorities) {
+        super(username, password, authorities);
+    }*/
+
     public UserR(String name, String email, String phone) {
         this.name = name;
         this.email = email;
@@ -43,7 +56,12 @@ public class UserR {
         this.id = id;
     }
 
+    //TODO: what is this name? Replace with Username
     public String getName() {
+        return name;
+    }
+
+    public String getUsername() {
         return name;
     }
 
@@ -74,4 +92,5 @@ public class UserR {
     public void setPassword(String password) {
         this.password = password;
     }
+
 }

@@ -3,8 +3,16 @@ package eist.aammn.login;
 import java.util.concurrent.CompletableFuture;
 import java.util.regex.Pattern;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.MediaType;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,12 +20,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.client.RestTemplate;
-
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Controller
@@ -35,16 +40,29 @@ public class LoginController {
     @PostMapping("/login")
     public String login(@RequestParam("username") String username, @RequestParam("password") String password, RedirectAttributes redirectAttributes) {
         if (!isValidUsername(username)) {
-            redirectAttributes.addAttribute("error", "Invalid username");
+            redirectAttributes.addAttribute("error", "Username can only contains letters and digits");
             return "redirect:/login";
         }
 
         if (!isValidPassword(password)) {
-            redirectAttributes.addAttribute("error", "Invalid password");
+            redirectAttributes.addAttribute("error", "Invalid characters in the password");
             return "redirect:/login";
         }
 
         // TODO: login logic here
+
+        //UserDetails userDetails = new UserDetails(username, password);
+        //Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+
+        //SecurityContextHolder.getContext().setAuthentication(authentication);
+
+        try{            
+            if(loginService.login(username, password).get())
+                return "redirect:/dashboard";
+        } catch (Exception e){
+            loginService.logger.info("Login failed.");
+            return "Error: " + e.getMessage(); // TODO: get the reason why login failed
+        }
 
         if (username.equals("admin") && password.equals("password")) {
             return "redirect:/dashboard"; // Successful login for admin.
@@ -63,6 +81,15 @@ public class LoginController {
         return "login";
     }
 
+    @GetMapping("/logout")
+    public String logout(HttpServletRequest request, HttpServletResponse response) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null) {
+            new SecurityContextLogoutHandler().logout(request, response, authentication);
+        }
+        return "redirect:/login?logout"; // Redirect to the login page with a logout parameter
+    }
+
     @PostMapping("/reset-password")
     public String resetPassword(@RequestParam("email") String email) {
 
@@ -72,19 +99,44 @@ public class LoginController {
     }
 
     @PostMapping("/add-user")
-    public String addUser(@RequestParam("email") String email,
+    public CompletableFuture<String> addUser(@RequestParam("email") String email,
             @RequestParam("username") String username,
-            @RequestParam("password") String password) {
+            @RequestParam("password") String password, 
+            RedirectAttributes redirectAttributes) {
 
-        loginService.addUser(email, username, password);
+        var isValidEmailFuture = isValidEmailAsync(email);
 
-        return "redirect:/dashboard";
+        return isValidEmailFuture.thenCompose(isValidEmail -> {
+            if (!isValidEmail) {
+                loginService.logger.error("Invalid email adress. Cannot add the user.");
+                redirectAttributes.addAttribute("error", "Invalid email adress");
+                return CompletableFuture.completedFuture("redirect:/dashboard?error");
+            }
+
+            if (!isValidUsername(username)) {
+            redirectAttributes.addAttribute("error", "Username can only contains letters and digits");
+            return CompletableFuture.completedFuture("Invalid username");
+            }
+
+            if (!isValidPassword(password)) {
+                redirectAttributes.addAttribute("error", "Invalid characters in the password");
+                return CompletableFuture.completedFuture("Invalid password");
+            }
+
+            loginService.addUser(email, username, password);
+            return CompletableFuture.completedFuture("redirect:/dashboard");
+        });
     }
 
     @PostMapping("/delete-user")
     public String deleteUser(@RequestParam("username") String username, @RequestParam("email") String email,
             Model model) {
-        var userExists = loginService.existsByUsernameOrEmail(username, email);
+
+        if (!isValidUsername(username)) {
+            return "redirect:/login";
+        }
+
+        var userExists = loginService.existsByUsername(username);
 
         if (!userExists) {
             model.addAttribute("error", "User not found");
@@ -113,11 +165,16 @@ public class LoginController {
         return Pattern.matches("[a-zA-Z0-9@#$%^&+=]+", password);
     }
 
+    /**
+     * We don't want any unvalid emails in our system. See https://www.disify.com/ . 
+     * @param email
+     * @return
+     */
     private CompletableFuture<Boolean> isValidEmailAsync(String email) {
         var apiUrl = "https://www.disify.com/api/email/" + email;
 
-        WebClient webClient = WebClient.builder().build();
-        Mono<String> responseMono = webClient.get()
+        var webClient = WebClient.builder().build();
+        var responseMono = webClient.get()
                 .uri(apiUrl)
                 .accept(MediaType.APPLICATION_JSON)
                 .retrieve()
@@ -129,6 +186,7 @@ public class LoginController {
                 var jsonNode = objectMapper.readTree(response);
                 var formatValid = jsonNode.get("format").asBoolean();
                 var dnsValid = jsonNode.get("dns").asBoolean();
+
                 loginService.logger.info("Email adress is checked. Format: "+formatValid + " DNS: "+dnsValid);
                 return formatValid && dnsValid;
             } catch (Exception e) {
