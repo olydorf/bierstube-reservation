@@ -1,6 +1,10 @@
 package eist.aammn.login;
 
+import java.util.concurrent.CompletableFuture;
+import java.util.regex.Pattern;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -8,6 +12,13 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.client.RestTemplate;
+
+import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Controller
 @ResponseBody
@@ -22,13 +33,24 @@ public class LoginController {
     }
 
     @PostMapping("/login")
-    public String login(@RequestParam("username") String username, @RequestParam("password") String password) {
+    public String login(@RequestParam("username") String username, @RequestParam("password") String password, RedirectAttributes redirectAttributes) {
+        if (!isValidUsername(username)) {
+            redirectAttributes.addAttribute("error", "Invalid username");
+            return "redirect:/login";
+        }
+
+        if (!isValidPassword(password)) {
+            redirectAttributes.addAttribute("error", "Invalid password");
+            return "redirect:/login";
+        }
+
         // TODO: login logic here
 
         if (username.equals("admin") && password.equals("password")) {
-            return "redirect:/dashboard"; // Redirect to the dashboard page after successful login
+            return "redirect:/dashboard"; // Successful login for admin.
         } else {
-            return "redirect:/login?error"; // Redirect to the login page with an error parameter
+            redirectAttributes.addAttribute("error", "Invalid credentials");
+            return "redirect:/login";
         }
     }
 
@@ -81,5 +103,39 @@ public class LoginController {
         loginService.deleteUserByUsernameOrEmail(username, email);
 
         return "redirect:/login?deleted";
+    }
+
+    private boolean isValidUsername(String username) {
+        return Pattern.matches("[a-zA-Z0-9]+", username);
+    }
+
+    private boolean isValidPassword(String password) {
+        return Pattern.matches("[a-zA-Z0-9@#$%^&+=]+", password);
+    }
+
+    private CompletableFuture<Boolean> isValidEmailAsync(String email) {
+        var apiUrl = "https://www.disify.com/api/email/" + email;
+
+        WebClient webClient = WebClient.builder().build();
+        Mono<String> responseMono = webClient.get()
+                .uri(apiUrl)
+                .accept(MediaType.APPLICATION_JSON)
+                .retrieve()
+                .bodyToMono(String.class);
+
+        return responseMono.map(response -> {
+            try {
+                var objectMapper = new ObjectMapper();
+                var jsonNode = objectMapper.readTree(response);
+                var formatValid = jsonNode.get("format").asBoolean();
+                var dnsValid = jsonNode.get("dns").asBoolean();
+                loginService.logger.info("Email adress is checked. Format: "+formatValid + " DNS: "+dnsValid);
+                return formatValid && dnsValid;
+            } catch (Exception e) {
+                loginService.logger.error("Error while parsing or network: "+e);
+                e.printStackTrace();
+                return false;
+            }
+        }).onErrorReturn(false).toFuture();
     }
 }
