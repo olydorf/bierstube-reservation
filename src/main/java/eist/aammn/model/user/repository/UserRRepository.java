@@ -1,5 +1,6 @@
-package eist.aammn.model.user;
+package eist.aammn.model.user.repository;
 
+import eist.aammn.model.user.model.UserR;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.query.Param;
 
@@ -16,5 +17,5 @@ public interface UserRRepository extends JpaRepository<UserR,Integer> {
 
     boolean existsByUsernameOrEmail(@Param("username") String username, @Param("email") String email);
 
-
+    boolean existsByUsernameAndPassword(String username, String password);
 }

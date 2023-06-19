@@ -1,4 +1,4 @@
-package eist.aammn.model.user;
+package eist.aammn.model.user.model;
 
 import eist.aammn.ICSBuilder;
 import eist.aammn.model.restaurant.RestaurantTable;

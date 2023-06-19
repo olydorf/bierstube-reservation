@@ -1,8 +1,8 @@
 package eist.aammn.login;
 
-import java.util.concurrent.CompletableFuture;
-import java.security.SecureRandom;
-
+import eist.aammn.model.email.EmailService;
+import eist.aammn.model.user.model.UserR;
+import eist.aammn.model.user.repository.UserRRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,20 +10,19 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import eist.aammn.model.email.EmailService;
-import eist.aammn.model.user.UserR;
-import eist.aammn.model.user.UserRRepository;
+import java.security.SecureRandom;
+import java.util.concurrent.CompletableFuture;
 
 @Service
-public class LoginService {
+public class AuthService {
     private final UserRRepository userRepository;
     private final EmailService emailService;
     private final PasswordEncoder passwordEncoder;
 
-    Logger logger = LoggerFactory.getLogger(LoginService.class);
+    public final Logger logger = LoggerFactory.getLogger(AuthService.class);
 
     @Autowired
-    public LoginService(UserRRepository userRepository, EmailService emailService) {
+    public AuthService(UserRRepository userRepository, EmailService emailService) {
         this.userRepository = userRepository;
         this.emailService = emailService;
         this.passwordEncoder = new BCryptPasswordEncoder();
@@ -81,7 +80,7 @@ public class LoginService {
 
         var newUser = new UserR();
         newUser.setEmail(email);
-        newUser.setName(username);
+        newUser.setUsername(username);
         newUser.setPassword(passwordEncoder.encode(password));
 
         return CompletableFuture.runAsync(() -> userRepository.save(newUser));

@@ -1,14 +1,14 @@
 package eist.aammn.model.email;
 
-import java.util.concurrent.CompletableFuture;
-
+import eist.aammn.model.user.model.Reservation;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
-import eist.aammn.model.user.Reservation;
+import java.util.concurrent.CompletableFuture;
+
 
 @Service
 public class EmailServiceImpl implements EmailService {

@@ -1,8 +1,12 @@
 package eist.aammn.model.user;
 
-
 import eist.aammn.model.restaurant.Restaurant;
 import eist.aammn.model.restaurant.RestaurantTable;
+import eist.aammn.model.user.model.Reservation;
+import eist.aammn.model.user.model.UserR;
+import eist.aammn.model.user.repository.ReservationRepository;
+import eist.aammn.model.user.repository.TableRepository;
+import eist.aammn.model.user.repository.UserRRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

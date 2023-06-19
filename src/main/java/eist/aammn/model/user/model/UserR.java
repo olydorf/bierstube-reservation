@@ -1,28 +1,27 @@
-package eist.aammn.model.user;
-
-import java.util.Collection;
+package eist.aammn.model.user.model;
 
 import javax.persistence.*;
-
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * A user.
  */
 @Entity
+@Table(name = "users",
+       uniqueConstraints = {
+           @UniqueConstraint(columnNames = "username"),
+           @UniqueConstraint(columnNames = "email")
+       })
 public class UserR {
 //extends User{ TODO: find out if it works with Hibernate
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(nullable = false)
-    private String name;
+    private String username;
 
     @Column(nullable = false)
     private String email;
@@ -33,6 +32,14 @@ public class UserR {
     @Column(nullable = false)
     private String password;
 
+    @Column(nullable = false)
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "user_roles", 
+             joinColumns = @JoinColumn(name = "user_id"),
+             inverseJoinColumns = @JoinColumn(name = "role_id"))
+    private Set<Role> roles = new HashSet<>();
+
+
     // You must have a default constructor for Hibernate to work properly
     public UserR() {}
 
@@ -41,7 +48,7 @@ public class UserR {
     }*/
 
     public UserR(String name, String email, String phone) {
-        this.name = name;
+        this.username = name;
         this.email = email;
         this.phone = phone;
     }
@@ -58,15 +65,23 @@ public class UserR {
 
     //TODO: what is this name? Replace with Username
     public String getName() {
-        return name;
+        return username;
     }
 
     public String getUsername() {
-        return name;
+        return username;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setUsername(String name) {
+        this.username = name;
+    }
+
+    public Set<Role> getRoles() {
+    return roles;
+    }
+
+    public void setRoles(Set<Role> roles) {
+        this.roles = roles;
     }
 
     public String getEmail() {
@@ -92,5 +107,6 @@ public class UserR {
     public void setPassword(String password) {
         this.password = password;
     }
+
 
 }

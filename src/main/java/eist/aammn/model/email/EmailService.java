@@ -1,8 +1,8 @@
 package eist.aammn.model.email;
 
-import java.util.concurrent.CompletableFuture;
+import eist.aammn.model.user.model.Reservation;
 
-import eist.aammn.model.user.Reservation;
+import java.util.concurrent.CompletableFuture;
 
 public interface EmailService {
     void sendReservationConfirmation(String recipientName, String recipientEmail);
