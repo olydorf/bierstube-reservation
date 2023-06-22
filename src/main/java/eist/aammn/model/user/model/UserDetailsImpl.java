@@ -9,6 +9,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
+import javax.persistence.OneToMany;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
@@ -32,7 +33,8 @@ public class UserDetailsImpl implements UserDetails {
   private boolean accountNonLocked;
   private boolean credentialsNonExpired;
   private boolean enabled;
-  private Collection<? extends GrantedAuthority> authorities;
+  @OneToMany
+  private Collection<Authority> authorities;
 
    public UserDetailsImpl(Long id, String username, String email, String password,
       Collection<? extends GrantedAuthority> authorities) {
@@ -40,7 +42,11 @@ public class UserDetailsImpl implements UserDetails {
     this.username = username;
     this.email = email;
     this.password = password;
-    this.authorities = authorities;
+    this.authorities = (Collection<Authority>) authorities;
+  }
+
+  public UserDetailsImpl() {
+
   }
 
   public static UserDetailsImpl build(UserR user) {

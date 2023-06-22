@@ -2,6 +2,7 @@ package eist.aammn.security;
 
 import eist.aammn.model.user.model.UserDetailsImpl;
 
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
