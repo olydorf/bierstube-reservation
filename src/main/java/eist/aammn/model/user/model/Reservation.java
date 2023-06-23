@@ -13,14 +13,17 @@ import java.time.temporal.ChronoUnit;
 
 @Entity
 public class Reservation {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @OneToOne
-    @JoinColumn(name = "user_id", nullable = false)
-    private UserR user;
+
+    @Column(name = "name", nullable = false)
+    private String name;
+
+    @Column(name = "email", nullable = false)
+    private String email;
+
 
     @Column(name = "start_time", nullable = false)
     private LocalDateTime startTime;
@@ -36,7 +39,60 @@ public class Reservation {
 
     @OneToOne
     @JoinColumn(name = "table_id", nullable = false)
-    private RestaurantTable restaurantTable;    
+    private RestaurantTable restaurantTable;
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public LocalDateTime getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(LocalDateTime startTime) {
+        this.startTime = startTime;
+    }
+
+    public LocalDateTime getEndTime() {
+        return endTime;
+    }
+
+    public void setEndTime(LocalDateTime endTime) {
+        this.endTime = endTime;
+    }
+
+    public boolean isStatus() {
+        return status;
+    }
+
+    public void setAmountGuests(int amountGuests) {
+        this.amountGuests = amountGuests;
+    }
+
+    public void setRestaurantTable(RestaurantTable restaurantTable) {
+        this.restaurantTable = restaurantTable;
+    }
+
+
 
     public RestaurantTable getRestaurantTable() {
         return restaurantTable;
@@ -48,6 +104,8 @@ public class Reservation {
     // You can also create a constructor for easier object creation
     public Reservation(String name, String email, LocalDateTime startTime, LocalDateTime endTime, RestaurantTable restaurantTable, int amountGuests) {
         //this.user = user;
+        this.name=name;
+        this.email=email;
         this.startTime = startTime;
         this.endTime = endTime;
         this.restaurantTable = restaurantTable;
@@ -67,9 +125,7 @@ public class Reservation {
         return amountGuests;
     }
 
-    public UserR getUser(){
-        return user;
-    }
+
 
     public boolean overlapsWith(LocalDateTime time) {
         time = time.plus(1, ChronoUnit.SECONDS);

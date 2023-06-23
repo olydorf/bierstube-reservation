@@ -37,7 +37,7 @@ public class EmailServiceImpl implements EmailService {
         message.setFrom(FROM_EMAIL_ADRESS);
         message.setTo(recipientName);
         message.setSubject("Reservation Confirmation Notification");
-        message.setText("Dear Worker,\n\nYou have a reservation confirmation request from customer " + reservation.getUser().getEmail() +
+        message.setText("Dear Worker,\n\nYou have a reservation confirmation request from customer " + reservation.getEmail() +
          "\n\nPlease confirm the reservation as soon as possible.\n\nBest regards,\n Reservation Platform");
 
         javaMailSender.send(message);

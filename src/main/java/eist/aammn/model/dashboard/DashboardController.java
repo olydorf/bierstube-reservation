@@ -40,7 +40,7 @@ public class DashboardController {
 
         if (optionalReservation.isPresent()) {
             var reservation = optionalReservation.get();
-            var customer = reservation.getUser();
+
 
             if(reservation.getAmountGuests() > 8){
               emailService.notifyReservationEmail("info@biertube.de", reservation);
@@ -49,7 +49,7 @@ public class DashboardController {
             reservation.setStatus(true);
             _reservationService.saveReservation(reservation); // TODO: replace void with CompletableFuture ? Check if save successfull
 
-            emailService.sendReservationConfirmation(customer.getUsername(), customer.getEmail());
+            emailService.sendReservationConfirmation(reservation.getName(), reservation.getEmail());
         }
 
         return "redirect:/dashboard";

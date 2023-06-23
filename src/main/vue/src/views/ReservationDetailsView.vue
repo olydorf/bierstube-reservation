@@ -11,9 +11,9 @@
           <div class="card-content">
             Table: {{ reservation.restaurantTable.id }}
               <br />
-              Name: {{ reservation.user.name }}
+              Name: {{ reservation.name }}
               <br />
-              Email: {{ reservation.user.email }}
+              Email: {{ reservation.email }}
 
           </div>
         </div>
