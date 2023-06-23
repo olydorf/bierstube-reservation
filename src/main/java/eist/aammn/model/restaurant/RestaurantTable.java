@@ -13,14 +13,33 @@ public class RestaurantTable {
     @Column(name = "table_number")
     private int id;
 
+    @Column(name = "capacity")
+    private int capacity;
+
+
+
+    public RestaurantTable(int id, int capacity) {
+        this.id = id;
+        this.capacity = capacity;
+
+    }
+
+    public RestaurantTable(int id) {
+    }
+
+
+    public int getCapacity() {
+        return capacity;
+    }
+
+    public void setCapacity(int capacity) {
+        this.capacity = capacity;
+    }
+
 
     // No-argument constructor
     public RestaurantTable() {}
 
-    // Argument constructor
-    public RestaurantTable(int id) {
-        this.id= id;
-    }
 
     // Getters and setters
     public int getId() {

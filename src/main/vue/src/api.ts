@@ -2,7 +2,6 @@ import type {
   Reservation,
   ReservationRequest,
   Restaurant,
-  User,
 } from "@/model";
 
 const ENDPOINT_BASE = "http://localhost:8080/api";
@@ -32,7 +31,7 @@ export function get<T>(ep: string, cached = false): Promise<T> {
 
 
 
-export function reserve(req: ReservationRequest): Promise<Reservation> {
+export function reserve(req: ReservationRequest): Promise<any> {
   return fetch(ENDPOINT_BASE + "/reservations", {
     method: "POST",
     body: JSON.stringify(req),

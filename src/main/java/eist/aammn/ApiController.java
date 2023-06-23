@@ -5,10 +5,10 @@ import eist.aammn.model.email.ReservationConfirmationRequest;
 import eist.aammn.model.restaurant.Restaurant;
 import eist.aammn.model.restaurant.RestaurantDTO;
 import eist.aammn.model.restaurant.RestaurantTable;
-import eist.aammn.model.user.Reservation;
-import eist.aammn.model.user.ReservationRequestDTO;
 import eist.aammn.model.user.ReservationService;
-import eist.aammn.model.user.UserR;
+import eist.aammn.model.user.model.Reservation;
+import eist.aammn.model.user.model.ReservationRequestDTO;
+import eist.aammn.model.user.model.UserR;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -114,21 +114,29 @@ public class ApiController {
 
 
     @PostMapping("/reservations")
-    public ResponseEntity<Reservation> addReservation(@RequestBody ReservationRequestDTO reservationDTO) {
+    public ResponseEntity<?> addReservation(@RequestBody ReservationRequestDTO reservationDTO) {
         try {
-                UserR user = reservationDTO.getUser();
-                LocalDateTime startTime = reservationDTO.getStartTime();
-                LocalDateTime endTime = reservationDTO.getEndTime();
-                RestaurantTable table = reservationDTO.getRestaurantTable();
+            String name = reservationDTO.getName();
+            String email = reservationDTO.getEmail();
+            int amountGuests = reservationDTO.getAmountGuests();
+            LocalDateTime startTime = reservationDTO.getStartTime();
+            LocalDateTime endTime = reservationDTO.getEndTime();
+            RestaurantTable table = reservationService.assignTableToReservation(startTime, amountGuests);
 
-                Reservation reservation = reservationService.createReservation(user, startTime, endTime, table);
-
-                return ResponseEntity.status(HttpStatus.CREATED).body(reservation);
-        } catch (IllegalStateException e) {
-                return ResponseEntity.status(HttpStatus.CONFLICT).body(null);
-        } catch (Exception e) {
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+            if (table == null) {
+                // No table available
+                return ResponseEntity.status(HttpStatus.NO_CONTENT).body("No table available for the requested time and guest count");
             }
+
+            Reservation reservation = reservationService.createReservation(name, email, amountGuests, startTime, endTime, table);
+
+            return ResponseEntity.status(HttpStatus.CREATED).body(reservation);
+        } catch (IllegalStateException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(null);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
+    }
+
 
 }

@@ -1,12 +1,17 @@
 package eist.aammn.model.user;
 
-
 import eist.aammn.model.restaurant.Restaurant;
 import eist.aammn.model.restaurant.RestaurantTable;
+import eist.aammn.model.user.model.Reservation;
+import eist.aammn.model.user.model.UserR;
+import eist.aammn.model.user.repository.ReservationRepository;
+import eist.aammn.model.user.repository.TableRepository;
+import eist.aammn.model.user.repository.UserRRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -18,8 +23,6 @@ public class ReservationService {
     private final ReservationRepository reservationRepository;
     private  final TableRepository tableRepository;
 
-    private  final UserRRepository userRRepository;
-
 
     @Autowired
     private Restaurant restaurant;
@@ -27,7 +30,6 @@ public class ReservationService {
     public ReservationService(ReservationRepository reservationRepository, TableRepository tableRepository, UserRRepository userRRepository, Restaurant restaurant) {
         this.reservationRepository = reservationRepository;
         this.tableRepository = tableRepository;
-        this.userRRepository = userRRepository;
         this.restaurant = restaurant;
     }
 
@@ -39,26 +41,23 @@ public class ReservationService {
         return reservationRepository.findById(id);
     }
 
-    public Reservation createReservation(UserR user, LocalDateTime startTime, LocalDateTime endTime, RestaurantTable table) {
+    public Reservation createReservation(String name,String email,int amountGuests, LocalDateTime startTime, LocalDateTime endTime, RestaurantTable table) {
         Set<RestaurantTable> freeTables = getFreeTables(startTime);
         boolean free = freeTables.stream()
                 .anyMatch(t -> t.getId() == table.getId());
         if (!free) {
             throw new IllegalStateException("Table is already reserved at the specified time");
         }
-        // Check if the user exists in the database
-        Optional<UserR> optionalUser = userRRepository.findUserByEmail(user.getEmail());
+        
+        // TODO: confirmation needed 
+        if (amountGuests > 8){
 
-        UserR managedUserR;
-        if (optionalUser.isPresent()) {
-            // User exists, use the existing user
-            managedUserR = optionalUser.get();
-        } else {
-            // User does not exist, create a new user
-            managedUserR = userRRepository.save(user);
+            // email service send an email
         }
+
+
         RestaurantTable managedTable = tableRepository.save(table);
-        Reservation reservation = new Reservation(managedUserR, startTime, endTime, managedTable);
+        Reservation reservation = new Reservation(name, email, startTime, endTime, managedTable, amountGuests);
                  return reservationRepository.save(reservation);
     }
 
@@ -69,9 +68,31 @@ public class ReservationService {
                         .noneMatch(rsv->rsv.overlapsWith(time) && rsv.getRestaurantTable() == t))
                 .collect(Collectors.toSet());
     }
+    public RestaurantTable assignTableToReservation(LocalDateTime time, int amountGuests) {
+        Set<RestaurantTable> freeTables = getFreeTables(time);
+
+        // Sort tables by capacity in ascending order
+        List<RestaurantTable> sortedTables = freeTables.stream()
+                .sorted(Comparator.comparingInt(RestaurantTable::getCapacity))
+                .toList();
+
+        for (RestaurantTable table : sortedTables) {
+            if (table.getCapacity() >= amountGuests) {
+                return table;  // return the assigned table
+            }
+        }
+
+        // No suitable table found
+        return null;
+    }
+
 
     public void deleteReservation(Integer id) {
         reservationRepository.deleteById(id);
+    }
+
+    public void saveReservation(Reservation reservation){
+        reservationRepository.save(reservation);
     }
 }
 

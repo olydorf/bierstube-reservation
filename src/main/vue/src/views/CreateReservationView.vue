@@ -30,18 +30,20 @@
                   />
                 </div>
               </div>
-              <div class="field">
-                <label class="label">Phone Number</label>
-                <div class="control">
-                  <input
-                    class="input"
-                    type="tel"
-                    v-model="phone"
-                    placeholder="Phone Number"
-                    required
-                  />
+                <div class="field">
+                    <label class="label">Number of Guests</label>
+                    <div class="control">
+                        <input
+                                class="input"
+                                type="number"
+                                min="2"
+                                max="12"
+                                v-model="amountGuests"
+                                placeholder="Number of Guests"
+                                required
+                        />
+                    </div>
                 </div>
-              </div>
             </form>
           </div>
           <div class="card-header">
@@ -73,26 +75,15 @@
           <div class="card-footer">
             <a
               class="card-footer-item"
-              :class="time === null || table.id < 0 ? 'is-disabled' : ''"
+              :class="time === null  ? 'is-disabled' : ''"
               :title="
-                (time === null ? 'Select a time first\n' : '') +
-                (table.id < 0 ? 'Select a table first' : '')
+                (time === null ? 'Select a time first\n' : '')
               "
               @click="reserve()"
             >
               <icon icon="circle-check" style="margin-right: 1em" />
               Reserve
             </a>
-          </div>
-        </div>
-      </div>
-      <div class="column is-7">
-        <div class="card" :class="time === null ? 'is-hidden' : ''">
-          <div class="card-header">
-            <p class="card-header-title">Select a table</p>
-          </div>
-          <div class="card-content">
-            <div v-html="restaurant.layoutSvg"></div>
           </div>
         </div>
       </div>
@@ -120,19 +111,13 @@ export default defineComponent({
       weekDay: this.$route.query.weekDay as string,
       restaurant: LOADING_RESTAURANT,
       date: new Date(),
-      freeTables: [] as number[],
-
       // user selected
       time: null as null | Date,
-      table: { id: 0 },
       reserved: false,
       // added form data
       name: "",
       email: "",
-      phone: "",
-      // helper
-      renderedLayout: false,
-      freeTablesPoller: null as null | number,
+      amountGuests: 0,
     };
   },
   methods: {
@@ -140,57 +125,24 @@ export default defineComponent({
     timeToLocale: timeToLocale,
 
     async reserve() {
-      if (this.time == null || this.table.id < 0 || this.reserved) return;
+      if (this.time == null || this.reserved) return;
       this.reserved = true;
 
       let reservation = await api.reserve({
-        user: {
+
           name: this.name,
           email: this.email,
-          phone: this.phone,
-        },
+          amountGuests: this.amountGuests,
+
         startTime: this.time.toISOString(),
         endTime: new Date(
           this.time.getTime() + RESERVATION_DURATION
         ).toISOString(),
-        restaurantTable: this.table,
       });
       // Send reservation confirmation email
       await api.sendReservationConfirmationEmail(this.name, this.email);
 
       await this.$router.push(`/reservations`);
-    },
-    async checkFreeTables() {
-      if (this.time == null) return;
-      this.freeTables = await api.freeTablesAt(this.time);
-      if (!this.freeTables.includes(this.table.id)) this.table.id = -1;
-      this.renderLayout(true);
-    },
-    renderLayout(force: boolean) {
-      if (this.renderedLayout && !force) return;
-      for (let table of this.restaurant.tables) {
-        let svg = document.getElementById(
-          "table-" + table.id
-        ) as unknown as SVGElement;
-        if (svg) this.renderedLayout = true;
-        svg.classList.remove(
-          "svg-table",
-          "selected-table",
-          "reserved-table",
-          "disabled-table"
-        );
-        svg.classList.add("svg-table");
-        if (table.id == this.table.id)
-          svg.classList.add("selected-table");
-        if (!this.freeTables.includes(table.id))
-          svg.classList.add("reserved-table");
-        let t = this;
-        svg.onclick = () => {
-          if (!t.freeTables.includes(table.id)) return;
-          t.table.id = table.id;
-          t.renderLayout(true);
-        };
-      }
     },
   },
   computed: {
@@ -198,11 +150,7 @@ export default defineComponent({
       return timeSlots(this.restaurant.openingHours, this.date, this.weekDay);
     },
   },
-  watch: {
-    async time(n) {
-      await this.checkFreeTables();
-    },
-  },
+
   async mounted() {
     this.weekDay = this.weekDay as string;
     this.restaurant = await api.restaurant();
@@ -212,15 +160,8 @@ export default defineComponent({
       return;
     }
     this.date = nextNthDay;
-    await this.checkFreeTables();
-    this.freeTablesPoller = setInterval(() => {
-      this.checkFreeTables();
-    }, SECONDS);
+
   },
-  beforeUnmount() {
-    if (this.freeTablesPoller == null) return;
-    clearInterval(this.freeTablesPoller);
-    this.freeTablesPoller = null;
-  },
+
 });
 </script>
