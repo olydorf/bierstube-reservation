@@ -1,4 +1,4 @@
-package eist.aammn.model.dashboard;
+package eist.aammn.login;
 
 import eist.aammn.model.email.EmailService;
 import eist.aammn.model.user.ReservationService;

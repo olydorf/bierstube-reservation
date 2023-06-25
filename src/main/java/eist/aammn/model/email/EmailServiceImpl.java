@@ -1,6 +1,6 @@
 package eist.aammn.model.email;
 
-import eist.aammn.model.dashboard.DashboardController;
+import eist.aammn.login.DashboardController;
 import eist.aammn.model.user.model.Reservation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
