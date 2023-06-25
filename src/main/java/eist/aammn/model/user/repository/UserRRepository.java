@@ -15,7 +15,8 @@ public interface UserRRepository extends JpaRepository<UserR,Integer> {
     
     boolean existsByUsername(@Param("username") String username);
 
-    boolean existsByUsernameOrEmail(@Param("username") String username, @Param("email") String email);
+    boolean existsByUsernameOrEmail(@Param("username") Optional<String> username, @Param("email") String email);
+
 
     boolean existsByUsernameAndPassword(String username, String password);
 }

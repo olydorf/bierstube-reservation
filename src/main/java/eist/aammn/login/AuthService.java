@@ -11,6 +11,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.security.SecureRandom;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 @Service
@@ -50,7 +51,7 @@ public class AuthService {
         });
     }
 
-    public CompletableFuture<Boolean> resetPassword(String email) {
+    public CompletableFuture<Boolean> resetPasswordAsync(String email) {
         logger.info("Password reset for " + email + " started.");
 
         return CompletableFuture.supplyAsync(() -> {
@@ -59,7 +60,7 @@ public class AuthService {
                 var user = userOptional.get();
 
                 var newPassword = generateNewPassword();
-                logger.debug("New generated password is "+ newPassword);
+                //logger.debug("New generated password is "+ newPassword);
                 user.setPassword(passwordEncoder.encode(newPassword));
                 userRepository.save(user);
 
@@ -89,6 +90,8 @@ public class AuthService {
     public Boolean existsByUsername(String username) {
          return userRepository.existsByUsername(username);
     }
+
+    public Optional<UserR> getUserByEmail(String email) {return userRepository.findUserByEmail( email); }
 
     public CompletableFuture<Void> deleteUserByUsernameOrEmail(String username, String email) {
         var user = userRepository.findByUsernameOrEmail(username, email)

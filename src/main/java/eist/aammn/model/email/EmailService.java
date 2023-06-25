@@ -5,7 +5,7 @@ import eist.aammn.model.user.model.Reservation;
 import java.util.concurrent.CompletableFuture;
 
 public interface EmailService {
-    void sendReservationConfirmation(String recipientName, String recipientEmail);
+    CompletableFuture<String> sendReservationConfirmation(String recipientName, String recipientEmail);
 
     CompletableFuture<String> sendPasswordResetEmail(String userEmail, String newPassword);
 

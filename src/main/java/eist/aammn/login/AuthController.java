@@ -10,7 +10,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
@@ -22,7 +21,6 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -50,141 +48,127 @@ public class AuthController {
         this.loginService = _loginService;
     }
 
-    @PostMapping("/signin")
+    @PostMapping("/login")
     public ResponseEntity<?> authenticateUser(@RequestParam("username") String username, @RequestParam("password") String password) {
 
-        Authentication authentication = authenticationManager
+        var authentication = authenticationManager
                 .authenticate(new UsernamePasswordAuthenticationToken(username, password));
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        String jwt = jwtUtils.generateJwtToken(authentication);
+        var jwt = jwtUtils.generateJwtToken(authentication);
 
-        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
-        List<String> roles = userDetails.getAuthorities().stream().map(item -> item.getAuthority())
+        var userDetails = (UserDetailsImpl) authentication.getPrincipal();
+        var roles = userDetails.getAuthorities().stream().map(item -> item.getAuthority())
                 .collect(Collectors.toList());
 
         return ResponseEntity
                 .ok(new JwtResponse(jwt, userDetails.getId(), userDetails.getUsername(), userDetails.getEmail(), roles));
     }
 
-    @PostMapping("/login")
-    public String login(@RequestParam("username") String username, @RequestParam("password") String password, RedirectAttributes redirectAttributes) {
-        if (!isValidUsername(username)) {
-            redirectAttributes.addAttribute("error", "Username can only contains letters and digits");
-            return "redirect:/login";
-        }
-
-        if (!isValidPassword(password)) {
-            redirectAttributes.addAttribute("error", "Invalid characters in the password");
-            return "redirect:/login";
-        }
-
-        // TODO: login logic here
-
-        //UserDetails userDetails = new UserDetails(username, password);
-        //Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-
-        //SecurityContextHolder.getContext().setAuthentication(authentication);
-
-        try{            
-            if(loginService.login(username, password).get())
-                return "redirect:/dashboard";
-        } catch (Exception e){
-            loginService.logger.info("Login failed.");
-            return "Error: " + e.getMessage(); // TODO: get the reason why login failed
-        }
-
-        if (username.equals("admin") && password.equals("password")) {
-            return "redirect:/dashboard"; // Successful login for admin.
-        } else {
-            redirectAttributes.addAttribute("error", "Invalid credentials");
-            return "redirect:/login";
-        }
-    }
-
     @GetMapping("/login")
-    public String showLoginPage(@RequestParam(value = "reset", required = false) String reset, Model model) {
+    public ResponseEntity<String> showLoginPage(@RequestParam(value = "reset", required = false) String reset, Model model) {
         if (reset != null && reset.equals("true")) {
-            model.addAttribute("resetMessage", "Password reset successful. Please log in with your new password.");
+            model.addAttribute("resetMessage", "If you have an account, new password is sent to your email address.");
         }
 
-        return "login";
+        return ResponseEntity.ok("login");
     }
 
     @GetMapping("/logout")
-    public String logout(HttpServletRequest request, HttpServletResponse response) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    public ResponseEntity<String> logout(HttpServletRequest request, HttpServletResponse response) {
+        var authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication != null) {
             new SecurityContextLogoutHandler().logout(request, response, authentication);
         }
-        return "redirect:/login?logout"; // Redirect to the login page with a logout parameter
+
+        request.getSession().invalidate();
+        SecurityContextHolder.clearContext();
+
+        return ResponseEntity.ok("Logout successful");
     }
 
     @PostMapping("/reset-password")
-    public String resetPassword(@RequestParam("email") String email) {
+    public CompletableFuture<ResponseEntity<String>> resetPassword(@RequestParam("email") String email) {
+        return isValidEmailAsync(email).thenCompose(isValidEmail -> {
+            if (!isValidEmail) {
+                return CompletableFuture.completedFuture(ResponseEntity.badRequest().body("Invalid email address"));
+            }
 
-        loginService.resetPassword(email);
-
-        return "redirect:/login?reset";
+            return CompletableFuture.supplyAsync(() -> loginService.getUserByEmail(email))
+                    .thenCompose(userOptional -> {
+                        if (userOptional.isPresent()) {
+                            return loginService.resetPasswordAsync(email)
+                                    .thenApply(passwordReset -> {
+                                        if (passwordReset) {
+                                            return ResponseEntity.ok("Password reset successful");
+                                        } else {
+                                            return ResponseEntity.badRequest().body("Failed to reset password");
+                                        }
+                                    });
+                        } else {
+                            return CompletableFuture.completedFuture(ResponseEntity.notFound().build());
+                        }
+                    });
+        });
     }
 
+
     @PostMapping("/add-user")
-    public CompletableFuture<String> addUser(@RequestParam("email") String email,
-            @RequestParam("username") String username,
-            @RequestParam("password") String password, 
-            RedirectAttributes redirectAttributes) {
+    public CompletableFuture<ResponseEntity<String>> addUser(@RequestParam("email") String email,
+                                                             @RequestParam("username") String username,
+                                                             @RequestParam("password") String password,
+                                                             RedirectAttributes redirectAttributes) {
 
         var isValidEmailFuture = isValidEmailAsync(email);
 
         return isValidEmailFuture.thenCompose(isValidEmail -> {
             if (!isValidEmail) {
-                loginService.logger.error("Invalid email adress. Cannot add the user.");
-                redirectAttributes.addAttribute("error", "Invalid email adress");
-                return CompletableFuture.completedFuture("redirect:/dashboard?error");
+                loginService.logger.error("Invalid email address. Cannot add the user.");
+                redirectAttributes.addAttribute("error", "Invalid email address");
+                return CompletableFuture.completedFuture(ResponseEntity.badRequest().body("Invalid email address"));
             }
 
             if (!isValidUsername(username)) {
-            redirectAttributes.addAttribute("error", "Username can only contains letters and digits");
-            return CompletableFuture.completedFuture("Invalid username");
+                redirectAttributes.addAttribute("error", "Username can only contain letters and digits");
+                return CompletableFuture.completedFuture(ResponseEntity.badRequest().body("Invalid username"));
             }
 
             if (!isValidPassword(password)) {
                 redirectAttributes.addAttribute("error", "Invalid characters in the password");
-                return CompletableFuture.completedFuture("Invalid password");
+                return CompletableFuture.completedFuture(ResponseEntity.badRequest().body("Invalid password"));
             }
 
             loginService.addUser(email, username, password);
-            return CompletableFuture.completedFuture("redirect:/dashboard");
+            return CompletableFuture.completedFuture(ResponseEntity.ok("User added successfully"));
         });
     }
 
     @PostMapping("/delete-user")
-    public String deleteUser(@RequestParam("username") String username, @RequestParam("email") String email,
-            Model model) {
+    public ResponseEntity<?> deleteUser(@RequestParam("username") String username,
+                                             @RequestParam("email") String email, Model model) {
 
         if (!isValidUsername(username)) {
-            return "redirect:/login";
+            return ResponseEntity.badRequest().body("Invalid username");
         }
 
         var userExists = loginService.existsByUsername(username);
 
         if (!userExists) {
-            model.addAttribute("error", "User not found");
-            return "delete-user";
+            return ResponseEntity.notFound().build();
         }
 
         model.addAttribute("username", username);
         model.addAttribute("email", email);
 
-        return "confirm-delete-user";
+        return ResponseEntity.ok("Confirm delete user");
     }
 
     @PostMapping("/confirm-delete-user")
-    public String confirmDeleteUser(@RequestParam("username") String username, @RequestParam("email") String email,
+    public ResponseEntity<String> confirmDeleteUser(@RequestParam("username") String username, @RequestParam("email") String email,
             Model model) {
         loginService.deleteUserByUsernameOrEmail(username, email);
 
-        return "redirect:/login?deleted";
+        return ResponseEntity.ok("redirect:/login?deleted");
     }
 
     private boolean isValidUsername(String username) {
