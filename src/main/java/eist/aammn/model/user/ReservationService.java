@@ -42,22 +42,14 @@ public class ReservationService {
     }
 
     public Reservation createReservation(String name,String email,int amountGuests, LocalDateTime startTime, LocalDateTime endTime, RestaurantTable table) {
-        Set<RestaurantTable> freeTables = getFreeTables(startTime);
-        boolean free = freeTables.stream()
-                .anyMatch(t -> t.getId() == table.getId());
-        if (!free) {
-            throw new IllegalStateException("Table is already reserved at the specified time");
-        }
-        
-        // TODO: confirmation needed 
-        if (amountGuests > 8){
 
-            // email service send an email
-        }
+        
+
 
 
         RestaurantTable managedTable = tableRepository.save(table);
         Reservation reservation = new Reservation(name, email, startTime, endTime, managedTable, amountGuests);
+
                  return reservationRepository.save(reservation);
     }
 
@@ -65,7 +57,7 @@ public class ReservationService {
         List<Reservation> reservations = getAllReservations();
         return Restaurant.getTables().stream()
                 .filter(t -> reservations.stream()
-                        .noneMatch(rsv->rsv.overlapsWith(time) && rsv.getRestaurantTable() == t))
+                        .noneMatch(rsv->rsv.overlapsWith(time) && rsv.getRestaurantTable().getId() == t.getId()))
                 .collect(Collectors.toSet());
     }
     public RestaurantTable assignTableToReservation(LocalDateTime time, int amountGuests) {

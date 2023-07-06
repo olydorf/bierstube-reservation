@@ -4,6 +4,8 @@ import CreateReservationView from "@/views/CreateReservationView.vue";
 import ReservationDetailsView from "@/views/ReservationDetailsView.vue";
 import NotFoundView from "@/views/NotFoundView.vue";
 import ReservationListView from "@/views/ReservationListView.vue";
+import NoTableAvailableView from "@/views/NoTableAvailableView.vue";
+import ConfirmationPendingView from "@/views/ConfirmationPendingView.vue";
 
 // noinspection TypeScriptValidateTypes
 const router = createRouter({
@@ -32,6 +34,16 @@ const router = createRouter({
       path: "/reservations/:id",
       name: "reservation",
       component: ReservationDetailsView,
+    },
+    {
+      path: '/confirmation-pending',
+      name: 'ConfirmationPending',
+      component: ConfirmationPendingView,
+    },
+    {
+      path: "/no-table-available",
+      name: "NoTableAvailable",
+      component: NoTableAvailableView,
     },
     {
       path: "/:path(.*)*",

@@ -114,22 +114,30 @@ public class ApiController {
 
 
     @PostMapping("/reservations")
-    public ResponseEntity<?> addReservation(@RequestBody ReservationRequestDTO reservationDTO) {
+    public ResponseEntity<Reservation> addReservation(@RequestBody ReservationRequestDTO reservationDTO) {
         try {
             String name = reservationDTO.getName();
             String email = reservationDTO.getEmail();
             int amountGuests = reservationDTO.getAmountGuests();
             LocalDateTime startTime = reservationDTO.getStartTime();
             LocalDateTime endTime = reservationDTO.getEndTime();
+
             RestaurantTable table = reservationService.assignTableToReservation(startTime, amountGuests);
 
             if (table == null) {
+                if (amountGuests > 8){
+                    Reservation reservation = reservationService.createReservation(name, email, amountGuests, startTime, endTime, table);
+                    emailService.notifyReservationEmail(name,reservation);
+                    return ResponseEntity.status(HttpStatus.CREATED).body(reservation);
+                    // email service send an email
+                }
                 // No table available
-                return ResponseEntity.status(HttpStatus.NO_CONTENT).body("No table available for the requested time and guest count");
+                return ResponseEntity.noContent().build(); // Returns a ResponseEntity with no content
             }
 
-            Reservation reservation = reservationService.createReservation(name, email, amountGuests, startTime, endTime, table);
 
+            Reservation reservation = reservationService.createReservation(name, email, amountGuests, startTime, endTime, table);
+            reservation.setStatus(true);
             return ResponseEntity.status(HttpStatus.CREATED).body(reservation);
         } catch (IllegalStateException e) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(null);

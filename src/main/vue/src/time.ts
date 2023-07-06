@@ -47,7 +47,7 @@ export function timeToLocale(t: string | Date): string {
   });
 }
 
-export function dateToLocale(d: string): string {
+export function dateToLocale(d: Date): string {
   return new Date(d).toLocaleDateString([], {
     // @ts-ignore
     dateStyle: "full",

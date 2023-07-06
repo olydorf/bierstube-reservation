@@ -128,7 +128,7 @@ export default defineComponent({
       if (this.time == null || this.reserved) return;
       this.reserved = true;
 
-      let reservation = await api.reserve({
+      let response = await api.reserve({
 
           name: this.name,
           email: this.email,
@@ -139,11 +139,19 @@ export default defineComponent({
           this.time.getTime() + RESERVATION_DURATION
         ).toISOString(),
       });
+        if (response.status === 204) {
+            // No table available, navigate to specific view or show message
+
+           await this.$router.push('/no-table-available');}
+        else if (this.amountGuests>8)
+                await this.$router.push('/confirmation-pending');
+        else {
+            let reservation = await response.json();
       // Send reservation confirmation email
       await api.sendReservationConfirmationEmail(this.name, this.email);
 
-      await this.$router.push(`/reservations`);
-    },
+      await this.$router.push('/reservations/' +  reservation.id);
+    }},
   },
   computed: {
     timeSlots() {
