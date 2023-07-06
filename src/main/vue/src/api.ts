@@ -31,12 +31,12 @@ export function get<T>(ep: string, cached = false): Promise<T> {
 
 
 
-export function reserve(req: ReservationRequest): Promise<any> {
+export function reserve(req: ReservationRequest): Promise<Response> {
   return fetch(ENDPOINT_BASE + "/reservations", {
     method: "POST",
     body: JSON.stringify(req),
     headers: { "content-type": "application/json" },
-  }).then((res) => res.json());
+  });
 
 
 }

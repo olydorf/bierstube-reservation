@@ -28,9 +28,7 @@
           <icon icon="calendar-plus" size="xl" />
         </a>
         <br />
-        <a class="button is-rounded" title="Print reservation" :href="''">
-          <icon icon="print" size="xl" />
-        </a>
+
       </div>
     </div>
   </div>
@@ -55,9 +53,9 @@ export default defineComponent({
     timeToLocale: timeToLocale,
   },
   async mounted() {
-      console.log('Fetched reservation:', this.reservation);
 
-      this.reservation = await api.reservation(this.reservation.id);
+
+      this.reservation = await api.reservation(parseInt(this.$route.params.id as string));
   },
 });
 </script>

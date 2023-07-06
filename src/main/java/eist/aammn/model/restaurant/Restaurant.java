@@ -41,7 +41,7 @@ public class Restaurant {
         OPENING_HOURS = opens;
     }
     static List<RestaurantTable> Tables =
-            IntStream.range(1, 11).mapToObj(i -> {
+            IntStream.range(1, 3).mapToObj(i -> {
                 RestaurantTable table = new RestaurantTable();
                 table.setId(i);
                 table.setCapacity(8);
