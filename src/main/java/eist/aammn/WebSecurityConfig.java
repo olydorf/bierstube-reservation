@@ -76,7 +76,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 			.exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and()
 			.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
 			.authorizeRequests().antMatchers("/dashboard/**").permitAll()
-			.antMatchers("/","/start", "/home","/restaurant","/assets/index.b8ab2269.js","/assets/*","/favicon.ico","/api/restaurant","/assets/index.ef216705.js","/api/reservations","/api/send-confirmation").permitAll()
+			.antMatchers("/","/start", "/home","/restaurant","/assets/index.b8ab2269.js","/assets/*","/favicon.ico","/api/restaurant","/assets/index.ef216705.js","/api/reservations","/api/send-confirmation","/api/reservations/*","/api/reservations/*/*").permitAll()
 			.anyRequest().authenticated();
 
         http.authenticationProvider(authenticationProvider());
