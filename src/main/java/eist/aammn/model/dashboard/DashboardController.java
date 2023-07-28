@@ -19,10 +19,8 @@ public class DashboardController {
 
     @Autowired
     private final ReservationService _reservationService;
-    
+    @Autowired
     private final EmailService emailService;
-
-    
     Logger logger = LoggerFactory.getLogger(DashboardController.class);
 
     public DashboardController(ReservationService reservationService, EmailService emailService){
