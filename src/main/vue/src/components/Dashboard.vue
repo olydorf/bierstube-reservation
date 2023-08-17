@@ -1,45 +1,70 @@
 <template>
-    <div class="card-content">
-        <table class="table is-striped is-hoverable is-fullwidth">
-            <thead>
-            <tr>
-                <th>Reservation ID</th>
-                <th>Name</th>
-                <th>Start Time</th>
-                <th>End Time</th>
-                <th>Number of Guests</th>
-                <th>Table ID</th>
-                <th>Status</th>
-                <th>Actions</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr v-for="reservation in reservations" :key="reservation.id">
-                <td>{{ reservation.id }}</td>
-                <td>{{ reservation.name }}</td>
-                <td>{{ reservation.startTime.replace('T', '    ') }}</td>
-                <td>{{ reservation.endTime.replace('T', '    ') }}</td>
-                <td>{{ reservation.amountGuests }}</td>
-                <td>{{ reservation.restaurantTable.id }}</td>
-                <td>
-                    <div v-bind:class="{ 'Confirmed': reservation.status === true, 'Pending': reservation.status === false }">
-                        {{ reservation.status ? 'Confirmed' : 'Pending' }}
-                    </div>
-                </td>
-                <td>
-                    <button class="card is-clickable" v-if="!reservation.status" @click="confirmReservation(reservation.id)">Confirm</button>
-                    <button class="card is-clickable" @click="cancelReservation(reservation.id)">Cancel</button>
-                    <button class="card is-clickable" @click="changeReservation(reservation.id)">Change</button>
-                </td>
-            </tr>
-            </tbody>
-        </table>
+    <div class="card-header">
+        <h1 class="card-header-title">All Reservations</h1>
+        <div class="card-sorting">Sort By: </div>
+        <div class="card-sorting">
+            <select  v-model="sortBy">
+                <option value="startTime">Start Time</option>
+                <option value="status">Status</option>
+                <option value="restaurantTable">Table ID</option>
+                <option value="amountGuests">Number of Guests</option>
+            </select>
+        </div>
     </div>
+    <div class="card-body">
+        <div class="card-content">
+            <table class="table is-striped is-hoverable is-fullwidth">
+                <thead>
+                <tr>
+                    <th>Reservation ID</th>
+                    <th>Name</th>
+                    <th>Start Time</th>
+                    <th>End Time</th>
+                    <th>Number of Guests</th>
+                    <th>Table ID</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr v-for="reservation in sortedReservations" :key="reservation.id">
+                    <td>{{ reservation.id }}</td>
+                    <td>{{ reservation.name }}</td>
+                    <td>{{ reservation.startTime.replace("T", "   ") }}</td>
+                    <td>{{ reservation.endTime.replace("T", "   ") }}</td>
+                    <td>{{ reservation.amountGuests }}</td>
+                    <td>{{ reservation.restaurantTable.id }}</td>
+                    <td>
+                        <div v-bind:class="{ 'Confirmed': reservation.status === true, 'Pending': reservation.status === false }">
+                            {{ reservation.status ? 'Confirmed' : 'Pending' }}
+                        </div>
+                    </td>
+                    <td>
+                        <button class="card is-clickable" v-if="!reservation.status" @click="confirmReservation(reservation.id)">Confirm</button>
+                        <button class="card is-clickable" @click="cancelReservation(reservation.id)">Cancel</button>
+                        <button class="card is-clickable" @click="changeReservation(reservation.id)">Change</button>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
 </template>
 
 <style scoped>
 .card {
     margin-right: 15px;
+}
+
+.card-sorting {
+    padding-top: 10px;
+    //padding-bottom: 0px;
+    padding-right: 20px;
+}
+
+.card-header-title {
+    font-size: large;
 }
 
 .Confirmed {
@@ -70,15 +95,18 @@ export default defineComponent({
     computed: {
         regex() {
             return regex
+        },
+        sortedReservations() {
+            return this.reservations.sort((a, b) =>
+                JSON.stringify(a[this.sortBy]).localeCompare(JSON.stringify(b[this.sortBy]))
+            )
         }
     },
-    // props: {
-    //     reservations: Object as PropType<Reservation>,
-    // },
     data() {
         return {
             reservations: [],
             rerenderReservationKey: 0,
+            sortBy: 'startTime'
         };
     },
     mounted() {
