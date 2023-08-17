@@ -6,6 +6,8 @@ import NotFoundView from "@/views/NotFoundView.vue";
 import ReservationListView from "@/views/ReservationListView.vue";
 import NoTableAvailableView from "@/views/NoTableAvailableView.vue";
 import ConfirmationPendingView from "@/views/ConfirmationPendingView.vue";
+import DashboardView from "@/views/DashboardView.vue";
+// import LoginView from "@/views/LoginView.vue";
 
 // noinspection TypeScriptValidateTypes
 const router = createRouter({
@@ -45,6 +47,16 @@ const router = createRouter({
       name: "NoTableAvailable",
       component: NoTableAvailableView,
     },
+    {
+      path: "/dashboard",
+      name: "Dashboard",
+      component: DashboardView,
+    },
+    // {
+    //   path: "/login",
+    //   name: "Login",
+    //   component: LoginView,
+    // },
     {
       path: "/:path(.*)*",
       name: "notFound",

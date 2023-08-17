@@ -18,14 +18,12 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-
-
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(
-    // securedEnabled = true,
-    // jsr250Enabled = true,
-    prePostEnabled = true)
+        // securedEnabled = true,
+        // jsr250Enabled = true,
+        prePostEnabled = true)
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
@@ -58,31 +56,58 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Bean
     public DaoAuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
-        
+
         authProvider.setUserDetailsService(userDetailsService);
         authProvider.setPasswordEncoder(passwordEncoder());
-    
+
         return authProvider;
     }
-    
+
     /*
-    * All requests going to / and /home are allowed (permitted) - the user does not have to authenticate.
-    * TODO: Change the allowed pages.
-    */
+     * All requests going to / and /home are allowed (permitted) - the user does not have to authenticate.
+     * TODO: Change the allowed pages.
+     */
 
     @Override
-	protected void configure(HttpSecurity http) throws Exception {
-		http.cors().and().csrf().disable()
-			.exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and()
-			.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
-			.authorizeRequests().antMatchers("/dashboard/**").permitAll()
-			.antMatchers("/","/start", "/home","/restaurant","/assets/index.b8ab2269.js","/assets/*","/favicon.ico","/api/restaurant","/assets/index.ef216705.js","/api/reservations","/api/send-confirmation","/api/reservations/*","/api/reservations/*/*").permitAll()
-			.anyRequest().authenticated();
+    protected void configure(HttpSecurity http) throws Exception {
+        http.cors()
+                .and()
+                .csrf()
+                .disable()
+                .exceptionHandling()
+                .authenticationEntryPoint(unauthorizedHandler)
+                .and()
+                .sessionManagement()
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .and()
+                .authorizeRequests()
+                .antMatchers("/dashboard/**")
+                .permitAll()
+                // TODO added temporarily to work on frontend of dashboard and login page
+                .antMatchers(
+                        "/",
+                        "/start",
+                        "/home",
+                        "/restaurant",
+                        "/assets/index.b8ab2269.js",
+                        "/assets/*",
+                        "/favicon.ico",
+                        "/api/restaurant",
+                        "/assets/index.ef216705.js",
+                        "/api/reservations",
+                        "/api/send-confirmation",
+                        "/api/reservations/*",
+                        "/api/reservations/*/*",
+                        "/dashboard",
+                        "/login")
+                .permitAll()
+                .anyRequest()
+                .authenticated();
 
         http.authenticationProvider(authenticationProvider());
 
-		http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
-	}
+        http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
+    }
 
     /*
     @Override
@@ -92,7 +117,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
             .authorizeRequests()
             .antMatchers("/","/start", "/home").permitAll()
-            .anyRequest().authenticated() 
+            .anyRequest().authenticated()
             .and()
         .formLogin()
             .loginPage("/login")
@@ -104,5 +129,4 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         .httpBasic();
     }*/
 
-    
 }

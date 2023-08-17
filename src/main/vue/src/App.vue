@@ -12,8 +12,10 @@ import { RouterView } from "vue-router";
     <div class="navbar-menu">
       <div class="navbar-start">
         <router-link class="navbar-item" to="/reservations">
-          Reservations</router-link
-        >
+          Reservations</router-link>
+        <!-- TODO this should only be shown when user is logged in as admin -->
+        <router-link class="navbar-item" to="/dashboard">
+            Dashboard</router-link>
       </div>
     </div>
   </div>
@@ -22,4 +24,8 @@ import { RouterView } from "vue-router";
 
 <style lang="scss">
 @import "@/assets/base.scss";
+.navbar-menu {
+  display: flex;
+  justify-content: flex-start;
+}
 </style>
