@@ -2,6 +2,7 @@ package eist.aammn;
 
 import eist.aammn.security.AuthEntryPointJwt;
 import eist.aammn.security.AuthTokenFilter;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -28,8 +29,9 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
     // jsr250Enabled = true,
     prePostEnabled = true)
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
-
+    @Autowired
     UserDetailsService userDetailsService;
+    @Autowired
     private AuthEntryPointJwt unauthorizedHandler;
 
     @Bean
