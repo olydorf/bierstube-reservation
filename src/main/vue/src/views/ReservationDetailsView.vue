@@ -9,8 +9,6 @@
             </p>
           </div>
           <div class="card-content">
-            Table: {{ reservation.restaurantTable.id }}
-              <br />
               Name: {{ reservation.name }}
               <br />
               Email: {{ reservation.email }}

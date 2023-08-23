@@ -1,12 +1,13 @@
 # Fetch the base java image
-FROM openjdk:11-jdk-slim
+FROM openjdk:17-jdk-slim
+
 
 # Install curl (required for health check)
 RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
 
 VOLUME /tmp
 
-ARG JAR_FILE=target/*.jar
+ARG JAR_FILE=*.jar
 COPY ${JAR_FILE} app.jar
 
 # Expose the port

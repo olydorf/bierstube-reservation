@@ -11,10 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -52,15 +49,33 @@ public class ReservationService {
 
                  return reservationRepository.save(reservation);
     }
+    public int getTotalGuestsForDay(LocalDateTime time) {
+        List<Reservation> reservationsForDay = getAllReservations().stream()
+                .filter(r -> r.getStartTime().toLocalDate().equals(time.toLocalDate()))
+                .collect(Collectors.toList());
+
+        return reservationsForDay.stream().mapToInt(Reservation::getAmountGuests).sum();
+    }
+
 
     public Set<RestaurantTable> getFreeTables(LocalDateTime time) {
-        List<Reservation> reservations = getAllReservations();
-        return Restaurant.getTables().stream()
-                .filter(t -> reservations.stream()
-                        .noneMatch(rsv->rsv.overlapsWith(time) && rsv.getRestaurantTable().getId() == t.getId()))
-                .collect(Collectors.toSet());
+        int alreadyReservedGuests = getTotalGuestsForDay(time);
+
+        if (alreadyReservedGuests >= 16) {
+            // All tables are occupied if the daily limit is reached
+            return new HashSet<>();
+        }
+
+        return Restaurant.getTables().stream().collect(Collectors.toSet());
     }
+
     public RestaurantTable assignTableToReservation(LocalDateTime time, int amountGuests) {
+        int alreadyReservedGuests = getTotalGuestsForDay(time);
+        if (alreadyReservedGuests + amountGuests > 16) {
+            // Daily limit exceeded
+            return null;
+        }
+
         Set<RestaurantTable> freeTables = getFreeTables(time);
 
         // Sort tables by capacity in ascending order
