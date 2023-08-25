@@ -3,9 +3,9 @@ import axios, { AxiosResponse } from "axios";
 const API_URL = "http://localhost:8080/start/";
 
 class AuthService {
-  login(user: { username: string; password: string }): Promise<any> {
+  async login(user: { username: string; password: string }): Promise<any> {
     return axios
-      .post(API_URL + "signin", {
+      .post(API_URL + "login", {
         username: user.username,
         password: user.password,
       })

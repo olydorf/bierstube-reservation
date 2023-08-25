@@ -89,13 +89,10 @@
 import axios from "axios";
 import * as api from "@/api";
 import { defineComponent } from "vue";
-import {regex} from "vee-validate/dist/rules.esm";
+import UserService from "@/services/user.service";
 
 export default defineComponent({
     computed: {
-        regex() {
-            return regex
-        },
         sortedReservations() {
             return this.reservations.sort((a, b) =>
                 JSON.stringify(a[this.sortBy]).localeCompare(JSON.stringify(b[this.sortBy]))
@@ -111,6 +108,7 @@ export default defineComponent({
     },
     mounted() {
         this.fetchReservations();
+        this.getUserToken();
     },
     watch: {
         reservations(reservations) {
@@ -118,6 +116,9 @@ export default defineComponent({
         }
     },
     methods: {
+        async getUserToken() {
+            const response = await UserService.getUserBoard();
+        },
         async fetchReservations() {
             this.reservations = await api.reservations();
         },

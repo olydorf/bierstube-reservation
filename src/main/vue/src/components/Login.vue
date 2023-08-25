@@ -6,34 +6,30 @@
         src="//ssl.gstatic.com/accounts/ui/avatar_2x.png"
         class="profile-img-card"
       />
-      <Form @submit="handleLogin" :validation-schema="schema">
-        <div class="form-group">
-          <label for="username">Username</label>
-          <Field name="username" type="text" class="form-control" />
-          <ErrorMessage name="username" class="error-feedback" />
-        </div>
-        <div class="form-group">
-          <label for="password">Password</label>
-          <Field name="password" type="password" class="form-control" />
-          <ErrorMessage name="password" class="error-feedback" />
-        </div>
+      <div class="form">
+        <Form @submit="handleLogin" :validation-schema="schema">
+            <div class="form-group">
+                <label for="username">Username</label>
+                <Field name="username" type="text" class="form-control" />
+                <ErrorMessage name="username" class="error-feedback" />
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <Field name="password" type="password" class="form-control" />
+                <ErrorMessage name="password" class="error-feedback" />
+            </div>
 
-        <div class="form-group">
-          <button class="btn btn-primary btn-block" :disabled="loading">
-            <span
-              v-show="loading"
-              class="spinner-border spinner-border-sm"
-            ></span>
-            <span>Login</span>
-          </button>
-        </div>
+            <div class="form-group-bottom-right">
+                    <button class="login-button">Login</button>
+            </div>
 
-        <div class="form-group">
-          <div v-if="message" class="alert alert-danger" role="alert">
-            {{ message }}
-          </div>
-        </div>
-      </Form>
+            <div class="form-group">
+                <div v-if="message" class="alert alert-danger" role="alert">
+                    {{ message }}
+                </div>
+            </div>
+        </Form>
+      </div>
     </div>
   </div>
 </template>
@@ -41,6 +37,7 @@
 <script>
 import { Form, Field, ErrorMessage } from "vee-validate";
 import * as yup from "yup";
+import AuthService from "@/services/auth.service";
 
 export default {
   name: "Login",
@@ -63,32 +60,23 @@ export default {
   },
   computed: {
     loggedIn() {
-      return this.$store.state.auth.status.loggedIn;
+      return this.store.state.auth.status.loggedIn;
     },
   },
   created() {
     if (this.loggedIn) {
-      this.$router.push("/profile");
+      this.router.push("/profile");
     }
   },
   methods: {
-    handleLogin(user) {
+    async handleLogin(user) {
       this.loading = true;
+      console.log("in Handle login");
+      const response = await AuthService.login(user);
+      if (response.status === 200) {
+          await this.router.push("/login")
+      }
 
-      this.$store.dispatch("start/login", user).then(
-        () => {
-          this.$router.push("/dashboard");
-        },
-        (error) => {
-          this.loading = false;
-          this.message =
-            (error.response &&
-              error.response.data &&
-              error.response.data.message) ||
-            error.message ||
-            error.toString();
-        }
-      );
     },
   },
 };
@@ -103,6 +91,16 @@ label {
 .card-container.card {
   max-width: 350px !important;
   padding: 40px 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.form-group-bottom-right {
+    @extends form-group;
+    justify-content: flex-end;
+    display: flex;
+    padding-top : 10px
 }
 
 .card {
@@ -130,5 +128,13 @@ label {
 
 .error-feedback {
   color: red;
+}
+
+.login-button {
+    @extend is-clickable.card;
+}
+
+.form {
+    padding-left: 20px;
 }
 </style>
