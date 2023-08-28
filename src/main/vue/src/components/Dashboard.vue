@@ -1,6 +1,9 @@
 <template>
     <div class="card-header">
         <h1 class="card-header-title">All Reservations</h1>
+        <div class="padding-plus-sign">
+            <button class="circle plus" @click="addReservation"></button>
+        </div>
         <div class="card-sorting">Sort By: </div>
         <div class="card-sorting">
             <select  v-model="sortBy">
@@ -42,7 +45,6 @@
                     <td>
                         <button class="card is-clickable" v-if="!reservation.status" @click="confirmReservation(reservation.id)">Confirm</button>
                         <button class="card is-clickable" @click="cancelReservation(reservation.id)">Cancel</button>
-                        <button class="card is-clickable" @click="changeReservation(reservation.id)">Change</button>
                     </td>
                 </tr>
                 </tbody>
@@ -59,7 +61,11 @@
 
 .card-sorting {
     padding-top: 10px;
-    //padding-bottom: 0px;
+    padding-right: 20px;
+}
+
+.padding-plus-sign {
+    padding-top: 8px;
     padding-right: 20px;
 }
 
@@ -83,6 +89,44 @@
     margin-right: 15px;
 }
 
+.circle{
+    border: 1px solid #aaa;
+    box-shadow: inset 1px 1px 3px #fff;
+    width: 22px;
+    height: 22px;
+    border-radius: 100%;
+    position: relative;
+    margin: 4px;
+    display: inline-block;
+    vertical-align: middle;
+    background: #aaaaaa4f;
+}
+.circle:hover{
+    background: #6363634f;
+}
+.circle:active{
+    background: radial-gradient(#aaa, #fff);
+}
+.circle:before,
+.circle:after{
+    content:'';position:absolute;top:0;left:0;right:0;bottom:0;
+}
+/* PLUS */
+.circle.plus:before,
+.circle.plus:after {
+    background:black;
+    box-shadow: 1px 1px 1px #ffffff9e;
+}
+.circle.plus:before{
+    width: 2px;
+    margin: 3px auto;
+}
+.circle.plus:after{
+    margin: auto 3px;
+    height: 2px;
+    box-shadow: none;
+}
+
 </style>
 
 <script>
@@ -90,6 +134,7 @@ import axios from "axios";
 import * as api from "@/api";
 import { defineComponent } from "vue";
 import UserService from "@/services/user.service";
+import router from "@/router";
 
 export default defineComponent({
     computed: {
@@ -121,6 +166,9 @@ export default defineComponent({
         },
         async fetchReservations() {
             this.reservations = await api.reservations();
+        },
+        addReservation() {
+            router.push("/reserve")
         },
         confirmReservation(id) {
             // Make an API call to confirm the reservation with the given ID

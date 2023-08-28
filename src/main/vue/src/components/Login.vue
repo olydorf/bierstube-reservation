@@ -10,12 +10,12 @@
         <Form @submit="handleLogin" :validation-schema="schema">
             <div class="form-group">
                 <label for="username">Username</label>
-                <Field name="username" type="text" class="form-control" />
+                <Field name="username" type="text" class="form-control" v-model="username1"/>
                 <ErrorMessage name="username" class="error-feedback" />
             </div>
             <div class="form-group">
                 <label for="password">Password</label>
-                <Field name="password" type="password" class="form-control" />
+                <Field name="password" type="password" class="form-control" v-model="password1" />
                 <ErrorMessage name="password" class="error-feedback" />
             </div>
 
@@ -56,6 +56,8 @@ export default {
       loading: false,
       message: "",
       schema,
+      username1: "",
+      password1: ""
     };
   },
   computed: {
@@ -69,14 +71,15 @@ export default {
     }
   },
   methods: {
-    async handleLogin(user) {
-      this.loading = true;
+    async handleLogin() {
       console.log("in Handle login");
-      const response = await AuthService.login(user);
+      this.loading = true;
+      const response = await AuthService.login(this.username1, this.password1);
+      console.log("response received.  12345")
       if (response.status === 200) {
-          await this.router.push("/login")
+          await this.router.push("/dashboard")
       }
-
+      this.loading = false;
     },
   },
 };
