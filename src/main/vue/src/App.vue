@@ -9,13 +9,6 @@ import { RouterView } from "vue-router";
         <icon icon="circle-left" size="xl" />
       </a>
     </div>
-    <div class="navbar-menu">
-      <div class="navbar-start">
-        <router-link class="navbar-item" to="/reservations">
-          Reservations</router-link
-        >
-      </div>
-    </div>
   </div>
   <RouterView />
 </template>

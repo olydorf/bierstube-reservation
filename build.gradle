@@ -67,11 +67,15 @@ test {
     defaultCharacterEncoding = 'UTF-8'
     useJUnitPlatform()
 }
+bootJar {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
 
 // Run the server.
 task run {
     dependsOn bootRun
 }
+
 
 node {
     nodeModulesDir = layout.projectDir.dir("src/main/vue").getAsFile()
