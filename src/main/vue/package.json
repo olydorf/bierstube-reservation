@@ -2,6 +2,7 @@
   "name": "aammn-frontend",
   "version": "0.0.0",
   "private": true,
+  "proxy": "https://reservation.olydorf.com",
   "scripts": {
     "dev": "vite",
     "build": "run-p type-check build-only",
