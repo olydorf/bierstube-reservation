@@ -4,7 +4,7 @@ import type {
   Restaurant,
 } from "@/model";
 
-const ENDPOINT_BASE = "http://localhost:8080/api";
+const ENDPOINT_BASE = "https://reservation.olydorf.com/api" ||"http://localhost:8080/api" ;
 
 const cache: Map<string, unknown> = new Map();
 export function get<T>(ep: string, cached = false): Promise<T> {
