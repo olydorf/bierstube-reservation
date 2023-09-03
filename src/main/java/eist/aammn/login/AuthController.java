@@ -5,7 +5,6 @@ import eist.aammn.model.user.model.UserDetailsImpl;
 import eist.aammn.model.user.repository.UserRRepository;
 import eist.aammn.security.JwtUtils;
 import eist.aammn.security.payload.JwtResponse;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -29,19 +28,10 @@ import java.util.stream.Collectors;
 @ResponseBody
 @RequestMapping("/start/")
 public class AuthController {
-    @Autowired
     AuthenticationManager authenticationManager;
-
-    @Autowired
     UserRRepository userRepository;
-
-    @Autowired
     PasswordEncoder encoder;
-
-    @Autowired
     JwtUtils jwtUtils;
-
-    @Autowired
     private final AuthService loginService;
 
     public AuthController(AuthService _loginService) {
