@@ -3,12 +3,10 @@ import axios, { AxiosResponse } from "axios";
 const API_URL = "http://localhost:8080/start/";
 
 class AuthService {
-  login(user: { username: string; password: string }): Promise<any> {
+  async login(username: string, password: string): Promise<any> {
     return axios
-      .post(API_URL + "signin", {
-        username: user.username,
-        password: user.password,
-      })
+        // todo I had to change this to fix the Bad Request responses
+      .post(API_URL + "login?password=" + password + "&username=" + username )
       .then((response: AxiosResponse) => {
         if (response.data.accessToken) {
           localStorage.setItem("user", JSON.stringify(response.data));
