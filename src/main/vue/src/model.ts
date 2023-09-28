@@ -23,6 +23,7 @@ export interface ReservationRequest {
   amountGuests:number
   startTime: string;
   endTime: string;
+  message: string;
 }
 
 export interface Reservation {
@@ -33,6 +34,7 @@ export interface Reservation {
   startTime: string;
   endTime: string;
   restaurantTable: Table;
+  message: string;
 }
 
 
@@ -44,6 +46,7 @@ export const LOADING_RESERVATION: Reservation = {
   endTime: "",
   startTime: "",
   restaurantTable:{ id: 0 },
+  message: "",
 };
 
 

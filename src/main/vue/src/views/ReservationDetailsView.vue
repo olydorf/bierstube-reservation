@@ -14,6 +14,8 @@
               Name: {{ reservation.name }}
               <br />
               Email: {{ reservation.email }}
+              <br />
+              Message: {{reservation.message}}
 
           </div>
         </div>

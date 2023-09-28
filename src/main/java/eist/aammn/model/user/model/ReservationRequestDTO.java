@@ -1,7 +1,6 @@
 package eist.aammn.model.user.model;
 
 import eist.aammn.model.restaurant.RestaurantTable;
-
 import java.time.LocalDateTime;
 
 public class ReservationRequestDTO {
@@ -13,6 +12,8 @@ public class ReservationRequestDTO {
     private LocalDateTime startTime;
     private LocalDateTime endTime;
     private RestaurantTable restaurantTable;
+
+    private String message;
 
     public String getName() {
         return name;
@@ -46,12 +47,17 @@ public class ReservationRequestDTO {
         this.status = status;
     }
 
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
     public ReservationRequestDTO() {
         // Default constructor is needed for deserialization
     }
-
-
-
 
     public LocalDateTime getStartTime() {
         return startTime;
@@ -77,4 +83,3 @@ public class ReservationRequestDTO {
         this.restaurantTable = table;
     }
 }
-
