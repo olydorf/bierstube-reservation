@@ -23,6 +23,7 @@
                     <th>Start Time</th>
                     <th>End Time</th>
                     <th>Number of Guests</th>
+                    <th>Email</th>
                     <th>Message</th>
                     <th>Status</th>
                     <th>Actions</th>
@@ -35,8 +36,9 @@
                     <td>{{ reservation.startTime.replace("T", "   ") }}</td>
                     <td>{{ reservation.endTime.replace("T", "   ") }}</td>
                     <td>{{ reservation.amountGuests }}</td>
+                    <td>{{ reservation.email }}</td>
                     <td>
-                        <div @mouseover="showOverlay(index)" @mouseleave="hideOverlay(index)">
+                        <div @mouseover="showOverlay(index)" @mouseleave="hideOverlay()">
                               Message
                         </div>
                         <span class="camsg-popup" v-if="show === index && reservation.message !== null ">{{ reservation.message }}</span>
@@ -66,11 +68,6 @@
 .card-sorting {
     padding-top: 10px;
     padding-right: 20px;
-}
-
-.card-message {
-    padding-top: 10px;
-    //padding-right: 20px;
 }
 
 .padding-plus-sign {
@@ -224,7 +221,7 @@ export default defineComponent({
         showOverlay(index) {
             this.show = index;
         },
-        hideOverlay(index) {
+        hideOverlay() {
             this.show = null;
         }
     },
