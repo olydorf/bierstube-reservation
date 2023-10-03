@@ -3,14 +3,15 @@ package eist.aammn.model.user;
 import eist.aammn.model.restaurant.Restaurant;
 import eist.aammn.model.restaurant.RestaurantTable;
 import eist.aammn.model.user.model.Reservation;
+import eist.aammn.model.user.model.UserR;
 import eist.aammn.model.user.repository.ReservationRepository;
 import eist.aammn.model.user.repository.TableRepository;
 import eist.aammn.model.user.repository.UserRRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import java.time.LocalDateTime;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,17 +20,12 @@ import org.springframework.stereotype.Service;
 public class ReservationService {
 
     private final ReservationRepository reservationRepository;
-    private final TableRepository tableRepository;
+    private  final TableRepository tableRepository;
 
     @Autowired
     private Restaurant restaurant;
-
     @Autowired
-    public ReservationService(
-            ReservationRepository reservationRepository,
-            TableRepository tableRepository,
-            UserRRepository userRRepository,
-            Restaurant restaurant) {
+    public ReservationService(ReservationRepository reservationRepository, TableRepository tableRepository, UserRRepository userRRepository, Restaurant restaurant) {
         this.reservationRepository = reservationRepository;
         this.tableRepository = tableRepository;
         this.restaurant = restaurant;
@@ -57,17 +53,30 @@ public class ReservationService {
 
         return reservationRepository.save(reservation);
     }
+    public int getTotalGuestsForDay(LocalDateTime time) {
+        List<Reservation> reservationsForDay = getAllReservations().stream()
+                .filter(r -> r.getStartTime().toLocalDate().equals(time.toLocalDate()))
+                .collect(Collectors.toList());
 
-    public Set<RestaurantTable> getFreeTables(LocalDateTime time) {
-        List<Reservation> reservations = getAllReservations();
-        return Restaurant.getTables().stream()
-                .filter(t -> reservations.stream()
-                        .noneMatch(rsv -> rsv.overlapsWith(time)
-                                && rsv.getRestaurantTable().getId() == t.getId()))
-                .collect(Collectors.toSet());
+        return reservationsForDay.stream().mapToInt(Reservation::getAmountGuests).sum();
     }
 
+    public Set<RestaurantTable> getFreeTables(LocalDateTime time) {
+        int alreadyReservedGuests = getTotalGuestsForDay(time);
+
+        if (alreadyReservedGuests >= 16) {
+            // All tables are occupied if the daily limit is reached
+            return new HashSet<>();
+        }
+
+        return Restaurant.getTables().stream().collect(Collectors.toSet());
+    }
     public RestaurantTable assignTableToReservation(LocalDateTime time, int amountGuests) {
+        int alreadyReservedGuests = getTotalGuestsForDay(time);
+        if (alreadyReservedGuests + amountGuests > 16) {
+            // Daily limit exceeded
+            return null;
+        }
         Set<RestaurantTable> freeTables = getFreeTables(time);
 
         // Sort tables by capacity in ascending order
@@ -77,7 +86,7 @@ public class ReservationService {
 
         for (RestaurantTable table : sortedTables) {
             if (table.getCapacity() >= amountGuests) {
-                return table; // return the assigned table
+                return table;  // return the assigned table
             }
         }
 
@@ -85,11 +94,13 @@ public class ReservationService {
         return null;
     }
 
+
     public void deleteReservation(Integer id) {
         reservationRepository.deleteById(id);
     }
 
-    public void saveReservation(Reservation reservation) {
+    public void saveReservation(Reservation reservation){
         reservationRepository.save(reservation);
     }
 }
+

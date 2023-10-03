@@ -1,4 +1,5 @@
 plugins {
+    id 'application'
     id 'org.springframework.boot' version '2.6.7'
     id 'io.spring.dependency-management' version '1.0.11.RELEASE'
 
@@ -67,11 +68,16 @@ test {
     defaultCharacterEncoding = 'UTF-8'
     useJUnitPlatform()
 }
-
-// Run the server.
-task run {
-    dependsOn bootRun
+bootJar {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
+application {
+    mainClassName = 'eist.aammn.DemoApplication'
+}
+
+
+
+
 
 node {
     nodeModulesDir = layout.projectDir.dir("src/main/vue").getAsFile()

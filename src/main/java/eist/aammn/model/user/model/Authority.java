@@ -20,5 +20,4 @@ public class Authority implements GrantedAuthority {
         return authority;
     }
 
-    // You might also need other fields and methods depending on your requirements
 }
