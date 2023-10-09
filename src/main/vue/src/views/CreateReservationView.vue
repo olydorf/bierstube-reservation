@@ -87,7 +87,7 @@
           <div class="card-footer">
             <a
               class="card-footer-item"
-              :class="time === null  ? 'is-disabled' : ''"
+              :class="time === null || email === '' || name === '' || amountGuests === 0 ? 'is-disabled' : ''"
               :title="
                 (time === null ? 'Select a time first\n' : '')
               "
