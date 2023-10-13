@@ -93,6 +93,7 @@
               "
               @click="reserve()"
             >
+
               <icon icon="circle-check" style="margin-right: 1em" />
               Reserve
             </a>
