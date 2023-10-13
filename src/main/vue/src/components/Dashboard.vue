@@ -9,7 +9,6 @@
             <select  v-model="sortBy">
                 <option value="startTime">Start Time</option>
                 <option value="status">Status</option>
-                <option value="restaurantTable">Table ID</option>
                 <option value="amountGuests">Number of Guests</option>
             </select>
         </div>
@@ -24,19 +23,26 @@
                     <th>Start Time</th>
                     <th>End Time</th>
                     <th>Number of Guests</th>
-                    <th>Table ID</th>
+                    <th>Email</th>
+                    <th>Message</th>
                     <th>Status</th>
                     <th>Actions</th>
                 </tr>
                 </thead>
                 <tbody>
-                <tr v-for="reservation in sortedReservations" :key="reservation.id">
+                <tr v-for="(reservation, index) in sortedReservations" :key="reservation.id">
                     <td>{{ reservation.id }}</td>
                     <td>{{ reservation.name }}</td>
                     <td>{{ reservation.startTime.replace("T", "   ") }}</td>
                     <td>{{ reservation.endTime.replace("T", "   ") }}</td>
                     <td>{{ reservation.amountGuests }}</td>
-                    <td>{{ reservation.restaurantTable.id }}</td>
+                    <td>{{ reservation.email }}</td>
+                    <td>
+                        <div @mouseover="showOverlay(index)" @mouseleave="hideOverlay()">
+                              Message
+                        </div>
+                        <span class="camsg-popup" v-if="show === index && reservation.message !== null ">{{ reservation.message }}</span>
+                    </td>
                     <td>
                         <div v-bind:class="{ 'Confirmed': reservation.status === true, 'Pending': reservation.status === false }">
                             {{ reservation.status ? 'Confirmed' : 'Pending' }}
@@ -126,6 +132,16 @@
     height: 2px;
     box-shadow: none;
 }
+.camsg-popup {
+    margin: 20px auto;
+    padding: 20px;
+    background: white;
+    border-radius: 5px;
+    position: fixed;
+    z-index: 5;
+    border-color: lightgrey;
+    border-style: solid;
+}
 
 </style>
 
@@ -148,7 +164,9 @@ export default defineComponent({
         return {
             reservations: [],
             rerenderReservationKey: 0,
-            sortBy: 'startTime'
+            sortBy: 'startTime',
+            show: null,
+            showWordIndex: null,
         };
     },
     mounted() {
@@ -199,6 +217,12 @@ export default defineComponent({
         },
         reservationRerender() {
             this.rerenderReservationKey += 1;
+        },
+        showOverlay(index) {
+            this.show = index;
+        },
+        hideOverlay() {
+            this.show = null;
         }
     },
 })

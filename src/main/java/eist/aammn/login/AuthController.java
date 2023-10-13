@@ -1,16 +1,15 @@
 package eist.aammn.login;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import eist.aammn.model.user.model.UserDetailsImpl;
-import eist.aammn.model.user.repository.UserRRepository;
 import eist.aammn.security.JwtUtils;
-import eist.aammn.security.payload.JwtResponse;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -22,15 +21,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.concurrent.CompletableFuture;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 @Controller
 @ResponseBody
 @RequestMapping("/start/")
 public class AuthController {
     AuthenticationManager authenticationManager;
-    UserRRepository userRepository;
-    PasswordEncoder encoder;
     JwtUtils jwtUtils;
     private final AuthService loginService;
 
@@ -40,19 +36,18 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<?> authenticateUser(@RequestParam("username") String username, @RequestParam("password") String password) {
-
-        var authentication = authenticationManager
-                .authenticate(new UsernamePasswordAuthenticationToken(username, password));
+        try {
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(username, password));
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        var jwt = jwtUtils.generateJwtToken(authentication);
 
-        var userDetails = (UserDetailsImpl) authentication.getPrincipal();
-        var roles = userDetails.getAuthorities().stream().map(item -> item.getAuthority())
-                .collect(Collectors.toList());
+        String jwtToken = jwtUtils.generateJwtToken(username, password);
 
-        return ResponseEntity
-                .ok(new JwtResponse(jwt, userDetails.getId(), userDetails.getUsername(), userDetails.getEmail(), roles));
+        return ResponseEntity.ok(jwtToken);
+        } catch (AuthenticationException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Authentication failed");
+        }
     }
 
     @GetMapping("/login")
@@ -129,7 +124,8 @@ public class AuthController {
             }
 
             loginService.addUser(email, username, password);
-            return CompletableFuture.completedFuture(ResponseEntity.ok("User added successfully"));
+            String token = jwtUtils.generateJwtToken(email, password);
+            return CompletableFuture.completedFuture(ResponseEntity.ok(token));
         });
     }
 

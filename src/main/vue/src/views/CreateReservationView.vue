@@ -44,6 +44,18 @@
                         />
                     </div>
                 </div>
+                <div class="field">
+                    <label class="label">Message</label>
+                    <div class="control">
+                        <input
+                                class="input"
+                                type="message"
+                                v-model="message"
+                                placeholder="Additional information for the Bierstube"
+                                required
+                        />
+                    </div>
+                </div>
             </form>
           </div>
           <div class="card-header">
@@ -73,7 +85,7 @@
           <div class="card-footer">
             <a
               class="card-footer-item"
-              :class="time === null  ? 'is-disabled' : ''"
+              :class="time === null || email === '' || name === '' || amountGuests === 0 ? 'is-disabled' : ''"
               :title="
                 (time === null ? 'Select a time first\n' : '')
               "
@@ -116,6 +128,7 @@ export default defineComponent({
       name: "",
       email: "",
       amountGuests: 0,
+      message: "",
     };
   },
   methods: {
@@ -136,6 +149,7 @@ export default defineComponent({
         endTime: new Date(
           this.time.getTime() + RESERVATION_DURATION
         ).toISOString(),
+          message: this.message,
       });
         if (response.status === 204) {
             // No table available, navigate to specific view or show message

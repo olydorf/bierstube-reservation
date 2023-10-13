@@ -13,13 +13,14 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 @Service
 public class ReservationService {
 
     private final ReservationRepository reservationRepository;
     private  final TableRepository tableRepository;
-
 
     @Autowired
     private Restaurant restaurant;
@@ -38,16 +39,19 @@ public class ReservationService {
         return reservationRepository.findById(id);
     }
 
-    public Reservation createReservation(String name,String email,int amountGuests, LocalDateTime startTime, LocalDateTime endTime, RestaurantTable table) {
-
-        
-
-
+    public Reservation createReservation(
+            String name,
+            String email,
+            int amountGuests,
+            LocalDateTime startTime,
+            LocalDateTime endTime,
+            RestaurantTable table,
+            String message) {
 
         RestaurantTable managedTable = tableRepository.save(table);
-        Reservation reservation = new Reservation(name, email, startTime, endTime, managedTable, amountGuests);
+        Reservation reservation = new Reservation(name, email, startTime, endTime, managedTable, amountGuests, message);
 
-                 return reservationRepository.save(reservation);
+        return reservationRepository.save(reservation);
     }
     public int getTotalGuestsForDay(LocalDateTime time) {
         List<Reservation> reservationsForDay = getAllReservations().stream()
