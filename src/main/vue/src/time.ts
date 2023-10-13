@@ -32,7 +32,7 @@ export function weekdayToLocale(d: string): string {
       o = 6;
       break;
   }
-  return new Date(2022, 6, 4 + o, 1).toLocaleString([], { weekday: "short" });
+  return new Date(2022, 6, 4 + o, 1).toLocaleString([], { weekday: "long" });
 }
 
 export function timeToDate(t: string, day = "2022-06-04"): Date {
@@ -87,7 +87,7 @@ export function nextOccurrenceOfWeekDay(weekDay: string): Date | null {
   return now;
 }
 
-const RESERVATION_GRANULARITY = 60 * MINUTES;
+const RESERVATION_GRANULARITY = 30 * MINUTES;
 export const RESERVATION_DURATION = 90 * MINUTES;
 
 export function timeSlots(
@@ -97,12 +97,13 @@ export function timeSlots(
 ): Date[][] {
   const day = date.toISOString().split("T")[0];
   const slots = [];
+  const boundaryTime = timeToDate('20:31', day).getTime();
   for (const oh of openingHours) {
     if (oh.weekDay != weekDay) continue;
 
     const endTime = timeToDate(oh.endTime, day).getTime();
     let start = timeToDate(oh.startTime, day);
-    while (start.getTime() < endTime) {
+    while (start.getTime() < boundaryTime) {
       slots.push([start, new Date(start.getTime() + RESERVATION_DURATION)]);
       start = new Date(start.getTime() + RESERVATION_GRANULARITY);
     }

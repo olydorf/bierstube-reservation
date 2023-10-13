@@ -69,7 +69,7 @@ public class ReservationService {
     }
     public RestaurantTable assignTableToReservation(LocalDateTime time, int amountGuests) {
         int alreadyReservedGuests = getTotalGuestsForDay(time);
-        if (alreadyReservedGuests + amountGuests > 16) {
+        if (alreadyReservedGuests + amountGuests > 60) {
             // Daily limit exceeded
             return null;
         }

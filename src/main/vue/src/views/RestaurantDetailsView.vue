@@ -32,6 +32,12 @@
             </tbody>
           </table>
         </section>
+          <!-- Impressum and Datenschutz links -->
+          <div class="links-section">
+              <a href="https://www.oly-dorf.de/impressum/" target="_blank">Impressum</a>
+              |
+              <a href="https://www.oly-dorf.de/datenschutz/" target="_blank">Datenschutz</a>
+          </div>
       </div>
     </div>
   </div>

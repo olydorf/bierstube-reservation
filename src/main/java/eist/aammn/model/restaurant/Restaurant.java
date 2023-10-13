@@ -35,13 +35,13 @@ public class Restaurant {
                     || d == DayOfWeek.THURSDAY
                     || d == DayOfWeek.FRIDAY
                     || d == DayOfWeek.SATURDAY) {
-                opens.add(new OpenHourSlot(d, LocalTime.of(19, 0), LocalTime.of(23, 30)));
+                opens.add(new OpenHourSlot(d, LocalTime.of(19, 0), LocalTime.of(00, 30)));
             }
         }
         OPENING_HOURS = opens;
     }
     static List<RestaurantTable> Tables =
-            IntStream.range(1, 3).mapToObj(i -> {
+            IntStream.range(1, 10).mapToObj(i -> {
                 RestaurantTable table = new RestaurantTable();
                 table.setId(i);
                 table.setCapacity(8);

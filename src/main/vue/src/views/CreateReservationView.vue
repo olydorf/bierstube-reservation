@@ -55,8 +55,7 @@
             <table class="table is-striped is-hoverable is-fullwidth">
               <thead>
                 <tr>
-                  <th>From</th>
-                  <th>To</th>
+                  <th>Time</th>
                 </tr>
               </thead>
               <tbody>
@@ -67,7 +66,6 @@
                   :class="slot[0] === time ? 'has-background-info' : ''"
                 >
                   <td>{{ timeToLocale(slot[0]) }}</td>
-                  <td>{{ timeToLocale(slot[1]) }}</td>
                 </tr>
               </tbody>
             </table>
