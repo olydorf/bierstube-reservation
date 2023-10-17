@@ -31,6 +31,7 @@
                   </tr>
                   </tbody>
               </table>
+
       </div>
       <div class="footer" style="bottom: 0; text-align: center; background-color: #e7ddb5">
           <div class="sideBySide">
@@ -47,6 +48,12 @@
               <p style="font-size: large; padding-bottom: 20px; font-weight: bold">Kontakt</p>
               <p style="padding-bottom: 10px">Email:  info@diebierstube.de</p>
               <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2660.3796491293488!2d11.550360577506725!3d48.180036248202754!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x479e76889d9b1aa7%3A0x56b07aac624a5b26!2sDie%20Bierstube!5e0!3m2!1sen!2sde!4v1697544858637!5m2!1sen!2sde" width="400" height="300" style="border:0;" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>          </div>
+      </div>
+      <!-- Impressum and Datenschutz links -->
+      <div class="links-section">
+          <a href="https://www.oly-dorf.de/impressum/" target="_blank">Impressum</a>
+          |
+          <a href="https://www.oly-dorf.de/datenschutz/" target="_blank">Datenschutz</a>
       </div>
   </div>
 </template>
