@@ -121,12 +121,14 @@ public class ApiController {
             int amountGuests = reservationDTO.getAmountGuests();
             LocalDateTime startTime = reservationDTO.getStartTime();
             LocalDateTime endTime = reservationDTO.getEndTime();
+            String message = reservationDTO.getMessage();
 
             RestaurantTable table = reservationService.assignTableToReservation(startTime, amountGuests);
 
             if (table == null) {
                 if (amountGuests > 8){
-                    Reservation reservation = reservationService.createReservation(name, email, amountGuests, startTime, endTime, table,"");
+                    Reservation reservation = reservationService.createReservation(name, email, amountGuests, startTime, endTime, table, message);
+
                     emailService.notifyReservationEmail(name,reservation);
                     return ResponseEntity.status(HttpStatus.CREATED).body(reservation);
                     // email service send an email
@@ -134,9 +136,8 @@ public class ApiController {
                 // No table available
                 return ResponseEntity.noContent().build(); // Returns a ResponseEntity with no content
             }
+            Reservation reservation = reservationService.createReservation(name, email, amountGuests, startTime, endTime, table, message);
 
-
-            Reservation reservation = reservationService.createReservation(name, email, amountGuests, startTime, endTime, table,"");
             reservation.setStatus(true);
             return ResponseEntity.status(HttpStatus.CREATED).body(reservation);
         } catch (IllegalStateException e) {
