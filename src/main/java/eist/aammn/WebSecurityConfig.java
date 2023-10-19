@@ -98,6 +98,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                         "/api/send-confirmation",
                         "/api/reservations/*",
                         "/api/reservations/*/*",
+                        "/api/reset-db",
                         "/dashboard",
                         "/login")
                 .permitAll()

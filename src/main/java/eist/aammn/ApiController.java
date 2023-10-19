@@ -32,6 +32,15 @@ public class ApiController {
     @Autowired
     private final ReservationService reservationService;
 
+    @Autowired
+    private DatabaseResetScheduler databaseResetScheduler;
+//test the script for resetting databases
+    @PostMapping("/reset-db")
+    public ResponseEntity<String> resetDatabase() {
+        databaseResetScheduler.resetDatabase();
+        return ResponseEntity.ok("Database reset!");
+    }
+
     @GetMapping("restaurant")
     public ResponseEntity<RestaurantDTO> getRestaurantDetails() {
         return ResponseEntity.ok(restaurant.toDTO());
