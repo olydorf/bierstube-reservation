@@ -72,7 +72,7 @@ bootJar {
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
 application {
-    mainClassName = 'eist.aammn.DemoApplication'
+    mainClassName = 'eist.aammn.Application'
 }
 
 
