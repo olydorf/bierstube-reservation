@@ -83,7 +83,7 @@ public class AuthService {
         newUser.setEmail(email);
         newUser.setUsername(username);
         newUser.setPassword(passwordEncoder.encode(password));
-
+        newUser.setPhone("");
         return CompletableFuture.runAsync(() -> userRepository.save(newUser));
     }
 

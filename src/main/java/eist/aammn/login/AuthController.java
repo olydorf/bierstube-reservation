@@ -32,9 +32,10 @@ public class AuthController {
 
     Logger logger = LoggerFactory.getLogger("");
 
-    public AuthController(AuthService _loginService, JwtUtils _jwtUtils) {
+    public AuthController(AuthService _loginService, JwtUtils _jwtUtils, AuthenticationManager _authenticationManager) {
         this.loginService = _loginService;
         this.jwtUtils = _jwtUtils;
+        this.authenticationManager = _authenticationManager;
 
     }
 
