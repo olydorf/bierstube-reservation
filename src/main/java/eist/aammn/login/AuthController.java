@@ -30,8 +30,12 @@ public class AuthController {
     JwtUtils jwtUtils;
     private final AuthService loginService;
 
-    public AuthController(AuthService _loginService) {
+    Logger logger = LoggerFactory.getLogger("");
+
+    public AuthController(AuthService _loginService, JwtUtils _jwtUtils) {
         this.loginService = _loginService;
+        this.jwtUtils = _jwtUtils;
+
     }
 
     @PostMapping("/login")
