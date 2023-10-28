@@ -1,5 +1,6 @@
 package eist.aammn.model.user;
 
+import eist.aammn.model.user.model.UserR;
 import eist.aammn.model.user.repository.UserRRepository;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -24,6 +25,7 @@ public class UserRDetailsService implements UserDetailsService {
         return User.builder()
                 .username(user.getUsername())
                 .password(user.getPassword())
+                .roles()
                 .build();
     }
 }

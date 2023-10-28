@@ -77,7 +77,7 @@ export default {
       const response = await AuthService.login(this.username1, this.password1);
       console.log("response received.  12345")
       if (response.status === 200) {
-          await this.router.push("/dashboard")
+          await router.push("/dashboard")
       }
       this.loading = false;
     },

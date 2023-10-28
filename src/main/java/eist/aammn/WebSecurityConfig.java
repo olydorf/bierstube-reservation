@@ -81,11 +81,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeRequests()
-                .antMatchers("/dashboard/**")
-                .permitAll()
-                // TODO added temporarily to work on frontend of dashboard and login page
                 .antMatchers(
                         "/",
+                        "/start/login",
                         "/start",
                         "/home",
                         "/restaurant",
@@ -94,11 +92,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                         "/favicon.ico",
                         "/api/restaurant",
                         "/assets/index.ef216705.js",
-                        "/api/reservations",
-                        "/api/send-confirmation",
-                        "/api/reservations/*",
-                        "/api/reservations/*/*",
-                        "/dashboard",
+//                        "/api/reservations",
+//                        "/api/send-confirmation",
+//                        "/api/reservations/*",
+//                        "/api/reservations/*/*",
                         "/login")
                 .permitAll()
                 .anyRequest()

@@ -41,7 +41,9 @@ public class UserR {
 
 
     // You must have a default constructor for Hibernate to work properly
-    public UserR() {}
+    public UserR() {
+        this.roles.add(new Role(ERole.ROLE_ADMIN));
+    }
 
     /*public UserR(String username, String password, Collection<? extends GrantedAuthority> authorities) {
         super(username, password, authorities);

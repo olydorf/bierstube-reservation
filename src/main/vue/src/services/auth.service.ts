@@ -8,11 +8,11 @@ class AuthService {
         // todo I had to change this to fix the Bad Request responses
       .post(API_URL + "login?password=" + password + "&username=" + username )
       .then((response: AxiosResponse) => {
-        if (response.data.accessToken) {
+          // console.log(response.data)
+          // console.log(response.statusText)
           localStorage.setItem("user", JSON.stringify(response.data));
-        }
-
-        return response.data;
+        console.log("login in authserveiceeeeeeeeeee")
+        return response;
       });
   }
 
