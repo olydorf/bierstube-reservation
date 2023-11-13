@@ -26,13 +26,11 @@ public class UserR {
     @Column(nullable = false)
     private String email;
 
-    @Column(nullable = false)
-    private String phone;
 
     @Column(nullable = false)
     private String password;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "user_roles", 
              joinColumns = @JoinColumn(name = "user_id"),
@@ -47,11 +45,7 @@ public class UserR {
         super(username, password, authorities);
     }*/
 
-    public UserR(String name, String email, String phone) {
-        this.username = name;
-        this.email = email;
-        this.phone = phone;
-    }
+
 
     // getters and setters
 
@@ -92,13 +86,6 @@ public class UserR {
         this.email = email;
     }
 
-    public String getPhone() {
-        return phone;
-    }
-
-    public void setPhone(String phone) {
-        this.phone = phone;
-    }
 
     public String getPassword() {
     return password;

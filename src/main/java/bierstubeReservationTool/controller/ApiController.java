@@ -35,7 +35,7 @@ public class ApiController {
 
     @Autowired
     private DatabaseResetScheduler databaseResetScheduler;
-//test the script for resetting databases
+
     @PostMapping("/reset-db")
     public ResponseEntity<String> resetDatabase() {
         databaseResetScheduler.resetDatabase();

@@ -86,7 +86,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 // TODO added temporarily to work on frontend of dashboard and login page
                 .antMatchers(
                         "/",
-                        "/start",
+                        "/start/*",
                         "/home",
                         "/restaurant",
                         "/assets/index.b8ab2269.js",
